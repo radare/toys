@@ -1,0 +1,11 @@
+WK : The minimalistic wiki
+==
+
+This is a minimalistic wiki with blogging features
+
+Run thttpd:
+
+ $ thttpd -c '/cgi/*' -p 8000 -D
+
+Or just configure your favorite web server to point
+cgi's at a certain directory and place 'wk' there.

@@ -1,0 +1,77 @@
+   ################
+   
+   MIRROR.PL README
+   
+   ################
+
+This tool is used to mirror set of files from one place to other.
+It's designed to maintain chroot environments and be able to pack
+a program or a set of ones managing library dependencies and so.
+You can use mirror.pl as a way to maintain system backups for
+configuration files or transfering them between different systems.
+You can also mix multiple packaging systems on a single script.
+
+mirror.pl also supports different packaging systems. Actually:
+
+ - pkgsrc
+ - portage
+ - debian
+
+Mirroring rules are written into a single file with one rule per
+line. Commands are just one or two characters. This is:
+
+  #   comment         ignores the rest of the line
+  :   global setup    see options below
+  @   copy package    copies the files of a package
+  @-  remove package  removes the files of a package found in the target dir
+  +   copy file       copy a file to the target directory
+  -   remove file     removes a file from the target directory
+  !   shell scape     runs a single command
+
+
+Options:
+--------
+This is the list of available setup commands. These ones are the started
+with ':' and are used to change global setups.
+
+  :libs     - follow and copy required libs for binaries
+  :verb     - be verbose while working
+  :into     - *NOT YET IMPLEMENTED*
+  :pkgsrc   - following '@' commands will refer to pkgsrc packages
+  :debian   - "" same for debian packages
+  :gentoo   - "" same for portage
+
+This is a sample script to create and maintain a simple jail environment
+used on a FreeBSD/pkgsrc box:
+
+---------8<--------------
+:pkgsrc
+:libs
+#:verb
+@bash
+@vim
+@vim-share
+@-screen
+#@ncurses
++/usr/pkg/share/terminfo
++/etc/termcap
++/bin
++/usr/bin/clear
++/usr/bin/whoami
+!mkdir -p tmp libexec home
+!cp -f /libexec/ld-elf.so.1 libexec/   # FreeBSD specific
+---------8<--------------
+
+
+The way to run this program is:
+
+$ perl mirror.pl
+use ./me [rulesfile] [rootpath]
+
+$ mkdir root/
+$ perl mirror.pl chroot.mir root/
+
+
+Have fun!
+
+                                           --pancake

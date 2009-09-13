@@ -1,0 +1,8 @@
+#!/bin/sh
+if [ -z "$1" ]; then
+  echo "Usage: p.bin [file]"
+  exit 1
+fi
+curl -sv --data-urlencode "code2@$1" \
+	-d "parent_pid=&format=text&poster=$USER&paste=Send&expiry=m&email=" \
+	http://pastebin.com/pastebin.php  2>&1 | grep Location: | awk '{print $3}'

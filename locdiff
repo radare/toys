@@ -1,0 +1,4 @@
+#!/bin/sh
+A=`hg diff $@ | grep -v '+++' | grep ^+ |wc -l`
+B=`hg diff $@ | grep -v -- '---' | grep ^- |wc -l`
+echo $((A-B))

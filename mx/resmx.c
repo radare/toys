@@ -139,7 +139,7 @@ int main(int argc,char *argv[])
 		ptr = x+1;
 	l=resmx_get(ptr);
 
-	if (resmx_iserror(l))
+	if (resmx_iserror(l) || l==NULL)
 	{
 		printf("%s\n",resmx_tostring(l));
 	}

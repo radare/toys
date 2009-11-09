@@ -1,0 +1,12 @@
+#!/usr/bin/perl
+chomp($last = qx(hg log|head -n 1|grep set|cut -d : -f 2));
+for $a (1 .. $last) {
+	$next = $a+1;
+	last if ($next>$last);
+	$diff = qx(hg diff -r $a -r $next 2>/dev/null);
+	$diff=~/\+\+\+ (.*)/;
+	$date=(split("\t", $1))[1];
+	@moar = ($diff=~/\n\+/g);
+	@less = ($diff=~/\n\-/g);
+	print "$a\t".($#moar-$#less)."  \t$date\n";
+}

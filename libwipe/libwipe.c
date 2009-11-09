@@ -74,7 +74,6 @@ static void randset(void *buf, size_t size)
 static int do_wipe(const char *pathname, blksize_t size)
 {
   off_t offset;
-  off_t ptr = 0;
   char *buf;
   register int i;
   int fd;
@@ -93,7 +92,7 @@ static int do_wipe(const char *pathname, blksize_t size)
 	}
 
 	if (verbose)
-	printf("[+] Wiping %s (%d bytes).\n", pathname, offset);
+	printf("[+] Wiping %s (%ld bytes).\n", pathname, offset);
 	lseek(fd, 0, SEEK_SET);
 	for(i=0;i<offset;i+=size) {
 		write(fd, buf, size);

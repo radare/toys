@@ -1,8 +1,8 @@
 #!/bin/sh
 [ -z "${PUBURI}" ] && PUBURI=http://lolcathost.org/b
 [ -z "${PUBSCP}" ] && PUBSCP=pancake@radare.org:/srv/http/lolcathostorg/b
-file=$1
-dest=$2
-[ -z "$dest" ] && dest=`basename $file`
-scp $file ${PUBSCP}/$dest
+file="$1"
+dest="$2"
+[ -z "$dest" ] && dest=`basename "$file"`
+scp "$file" "${PUBSCP}/$dest"
 echo ${PUBURI}/$dest

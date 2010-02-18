@@ -4,5 +4,5 @@
 file="$1"
 dest="$2"
 [ -z "$dest" ] && dest=`basename "$file"`
-scp "$file" "${PUBSCP}/$dest"
+scp -P 999 "$file" "${PUBSCP}/$dest"
 echo ${PUBURI}/$dest

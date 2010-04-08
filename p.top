@@ -1,0 +1,2 @@
+#!/bin/sh
+top -n 1|head -n 15|tail -n 8|awk '{print $2"\t"$10"%\t"$13}'

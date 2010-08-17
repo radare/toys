@@ -1,0 +1,11 @@
+#!/bin/sh
+nam=`echo $@|sed -e 's, ,+,g'`
+id=`curl -s "http://news.bbc.co.uk/weather/forecast/42/SearchResultsNode.xhtml?&search=$nam&region=world&type=undefined&startIndex=0&lowgraphics=false" | grep weather/forecast | head -n 1 | perl -ne '{/forecast\/(.*)"/;print $1}'`
+if [ -z "$id" ]; then
+  echo "Invalid location"
+  exit 1
+fi
+curl -s http://newsrss.bbc.co.uk/weather/forecast/$id \
+	| grep -e '<p class="sum"><strong>' -e 'temp max' -e 'temp min' -e 'abbr title' \
+	| sed -e 's.>.,.g' -e 's.<.,.g' -e 's.-.,.g' -e 's.".,.g' \
+	| awk -F , '{if(/strong/){printf $7"\t"}if(/temp max/){printf $4}if(/temp min/){print "-"$4}if(/abbr/){printf $3"  \t"}}' | head -n 5

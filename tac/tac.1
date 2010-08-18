@@ -1,0 +1,28 @@
+.TH TAC 1
+.SH NAME
+tac \- reverse concatenate files
+.SH SYNOPSIS
+.B tac
+[
+.I file ...
+]
+.SH DESCRIPTION
+.I Tac
+reads each
+.I file
+in sequence and writes it on the standard output in reverse line order.
+.IP
+.L
+tac file
+.LP
+prints a file in reverse line order
+.IP
+.L
+tac file1 file2 >file3
+.LP
+Concatenate reversed file1 and file2 into file3
+.LP
+.SH SEE ALSO
+.IR cat (1)
+.SH BUGS
+Same as in cat

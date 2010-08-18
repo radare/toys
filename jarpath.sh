@@ -1,5 +1,5 @@
 #!/bin/sh
-JARPATH="/usr/pkg/share/classpath:/usr/pkg/lib/java"
+[ -z "$JARPATH" ] && JARPATH="/usr/pkg/share/classpath:/usr/pkg/lib/java"
 JARPATH=`echo $JARPATH | awk '{ gsub(/:/," "); print $0}'`
 
 for A in $JARPATH ; do

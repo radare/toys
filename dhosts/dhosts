@@ -1,0 +1,23 @@
+#!/bin/sh
+# 2010 pancake//nopcode//org
+arps=$(mktemp)
+baseip=$(arp| head -n 2 | tail -n 1|cut -d . -f 1,2,3)
+nmap -sP $baseip.* >/dev/null 2>&1
+#ping -c 2 -b ${baseip}.255
+arp -an | grep -v incom |sed -e 's,(,,' -e 's,),,' | awk '{print $2" "$4}' > $arps
+
+if [ -f /etc/dhosts ]; then
+	hosts=$(grep -v '^#' /etc/dhosts | grep : | awk '{print $2"@"$1}')
+else
+	echo "Cannot find /etc/dhosts"
+	rm -f $arps
+	exit 1
+fi
+
+for a in $hosts ; do
+	name=$(echo $a | cut -d @ -f 1)
+	dmac=$(echo $a | cut -d @ -f 2)
+	dipa=$(grep $dmac $arps|cut -d ' ' -f 1)
+	[ -n "$dipa" ] && echo "$dipa	$name"
+done
+rm -f $arps

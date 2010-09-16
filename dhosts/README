@@ -1,0 +1,20 @@
+DHOSTS
+======
+
+Dynamic hosts is a simple tool to update /etc/hosts by finding
+devices in the local network based on the MACs described in
+/etc/dhosts
+
+
+Installation
+============
+
+  $ make install
+
+Usage
+=====
+
+  $ vim /etc/dhosts  # setup your devices
+  $ dhosts-update    # search devices and update /etc/hosts
+
+--pancake

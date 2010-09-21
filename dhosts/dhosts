@@ -7,7 +7,8 @@ nmap -sP $baseip.* >/dev/null 2>&1
 arp -an | grep -v incom |sed -e 's,(,,' -e 's,),,' | awk '{print $2" "$4}' > $arps
 
 if [ -f /etc/dhosts ]; then
-	hosts=$(grep -v '^#' /etc/dhosts | grep : | awk '{print $2"@"$1}')
+	hosts=$(grep -v '^#' /etc/dhosts | tr '[A-Z]' '[a-z]' | \
+		grep : | awk '{print $2"@"$1}')
 else
 	echo "Cannot find /etc/dhosts"
 	rm -f $arps

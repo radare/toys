@@ -3,5 +3,5 @@
 awk 'BEGIN{a=0}{if(/^#dhosts/){a=1}if(!a){print;}}' /etc/hosts > /etc/hosts.tmp
 [ ! $? = 0 ] && exit 1
 echo '#dhosts' >> /etc/hosts.tmp
-dhosts >> /etc/hosts.tmp
+dhosts $@ >> /etc/hosts.tmp
 mv /etc/hosts.tmp /etc/hosts

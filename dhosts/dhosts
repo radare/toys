@@ -1,10 +1,15 @@
 #!/bin/sh
 # 2010 pancake//nopcode//org
 arps=$(mktemp)
-baseip=$(arp| head -n 2 | tail -n 1|cut -d . -f 1,2,3)
-nmap -sP $baseip.* >/dev/null 2>&1
-#ping -c 2 -b ${baseip}.255
-arp -an | grep -v incom |sed -e 's,(,,' -e 's,),,' | awk '{print $2" "$4}' > $arps
+baseip=$(arp -an| grep ether | head -n 1 | tr '()' '..' | cut -d . -f 2,3,4)
+#nmap -sP $baseip.* >/dev/null 2>&1
+
+if [ -z "$1" ]; then
+	for a in `seq 1 254` ; do
+		ping -c 2 ${baseip}.$a 2>&1 >/dev/null &
+	done
+fi
+arp -an | grep -v incom | sed -e 's,(,,' -e 's,),,' | awk '{print $2" "$4}' > $arps
 
 if [ -f /etc/dhosts ]; then
 	hosts=$(grep -v '^#' /etc/dhosts | tr '[A-Z]' '[a-z]' | \

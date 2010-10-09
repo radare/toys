@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=dhosts
+Comment=update etc/hosts from etc/dhosts
+TryExec=gnome-terminal
+Exec=gnome-terminal
+Icon=utilities-terminal
+Type=Application
+Categories=Utility;

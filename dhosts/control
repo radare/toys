@@ -3,8 +3,7 @@ Version: 0.1
 Section: base
 Priority: optional
 Architecture: all
-Depends: bash (>= 2.05a-11), textutils (>= 2.0-12), awk, procps (>= \
-1:2.0.7-8), sed (>= 3.02-8), grep (>= 2.4.2-3), coreutils (>= 5.0-5)
+Depends: awk, grep
 Maintainer: pancake@nopcode.org
 Description: Update /etc/hosts based on dhosts
  Dynamically update host-ip database based on MAC addresses found in LAN.

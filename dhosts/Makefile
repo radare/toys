@@ -20,5 +20,7 @@ deb:
 	cd deb && find * -type f | xargs md5sum > md5sums
 	cp control deb
 	cd deb && tar czvf control.tar.gz md5sums control
-	cd deb && ar cqvf ../dhosts-0.1.deb data.tar.gz control.tar.gz
+	echo 2.0 > deb/debian-binary
+	rm -f dhosts-0.1.deb
+	cd deb && ar cqvf ../dhosts-0.1.deb debian-binary data.tar.gz control.tar.gz
 	rm -rf deb

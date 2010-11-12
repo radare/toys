@@ -1,0 +1,4 @@
+#!/bin/sh
+
+CLASS=$1
+vim -R -c "/ $CLASS " $HOME/prg/vala/vapi/gtk+-2.0.vapi

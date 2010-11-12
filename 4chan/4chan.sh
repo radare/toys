@@ -6,8 +6,11 @@ if [ "$1" = "-h" ]; then
   exit 0
 fi
 if [ "$1" = "-c" ]; then
-  rm -f *.jpg *.png *.gif
+  CUR=$(ls *.jpg *.png *.gif)
+#  rm -f *.jpg *.png *.gif
   shift
+else
+  CUR=""
 fi
 [ -z "$(pidof eog)" ] && eog -s -f . &
 num=$1
@@ -32,3 +35,4 @@ for a in $(cat b); do
     cd ..
   fi
 done
+[ -n "$CUR" ] && rm -f ${CUR}

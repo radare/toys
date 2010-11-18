@@ -1,0 +1,4 @@
+#!/bin/sh
+hg diff > /tmp/diff
+EDITOR="vim -c ':sp /tmp/diff'"
+hg ci

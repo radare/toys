@@ -1,0 +1,26 @@
+#!/bin/sh
+DIR=${HOME}/prg
+[ -z "$1" ] && DIR=$1
+cd ${DIR}
+if [ $? = 0 ]; then
+	HGS=`echo */.hg|sed -e 's,/.hg,,g'`
+	GITS=`echo */.git|sed -e 's,/.git,,g'`
+	SVNS=`echo */.svn|sed -e 's,/.svn,,g'`
+	for a in ${HGS} ; do
+		echo "==> Updating $a"
+		cd ${DIR}/${a}
+		hg pull -u
+	done
+	for a in ${GITS} ; do
+		echo "==> Updating $a"
+		cd ${DIR}/${a}
+		git pull
+	done
+	for a in ${SVNS} ; do
+		echo "==> Updating $a"
+		cd ${DIR}/${a}
+		svn up
+	done
+else
+	echo "Cannot chdir to ${DIR}" > /dev/stderr
+fi

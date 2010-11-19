@@ -1,0 +1,13 @@
+#!/bin/sh
+cd /var/mobile/Library/Mail
+if [ $? = 0 ]; then
+	if [ -z "$1" ]; then
+		echo "==> Backup for $0"
+		mkdir -p ${BDIR}/mail
+		tar czf ${BDIR}/mail/envelope.tar.gz Envelope\ Index
+#		tar czf ${BDIR}/mail/protected.tar.gz Protected\ Index
+	else
+		echo "==> Restore $0 from $1"
+		tar xzf ${BDIR}/mail/envelope.tar.gz
+	fi
+fi

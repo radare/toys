@@ -1,0 +1,12 @@
+#!/bin/sh
+cd /var/mobile/Media/DCIM
+if [ $? = 0 ]; then
+	if [ -z "$1" ]; then
+		echo "==> Backup for $0"
+		mkdir -p ${BDIR}/dcim
+		tar czf ${BDIR}/dcim/100apple.tar.gz *
+	else
+		echo "==> Restore $0 from $1"
+		tar xzf ${BDIR}/dcim/100apple.tar.gz
+	fi
+fi

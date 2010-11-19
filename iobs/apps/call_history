@@ -1,0 +1,12 @@
+#!/bin/sh
+cd /var/mobile/Library/CallHistory
+if [ $? = 0 ]; then
+	if [ -z "$1" ]; then
+		echo "==> Backup for $0"
+		mkdir -p ${BDIR}/call_history
+		cp call_history.db ${BDIR}/call_history
+	else
+		echo "==> Restore $0 from $1"
+		cp ${BDIR}/call_history/call_history.db .
+	fi
+fi

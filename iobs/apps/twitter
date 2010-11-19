@@ -1,0 +1,14 @@
+#!/bin/sh
+cd /var/mobile/Applications/
+cd */Twitter.app/..
+if [ $? = 0 ]; then
+	if [ -z "$1" ]; then
+		echo "==> Backup for $0"
+		mkdir -p ${BDIR}/twitter
+		tar czf ${BDIR}/twitter/prefs.tar.gz Library/Preferences
+	else
+		echo "==> Restore $0 from $1"
+		mv Library/Preferences Library/Preferences.old
+		tar xzf ${BDIR}/twitter/prefs.tar.gz
+	fi
+fi

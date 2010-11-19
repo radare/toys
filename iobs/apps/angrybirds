@@ -1,0 +1,14 @@
+#!/bin/sh
+cd /var/mobile/Applications/
+cd */AngryBirdsiPad.app/..
+if [ $? = 0 ]; then
+	if [ -z "$1" ]; then
+		echo "==> Backup for $0"
+		mkdir -p ${BDIR}/angrybirds-ipad
+		tar czf ${BDIR}/angrybirds-ipad/documents.tar.gz Documents
+	else
+		echo "==> Restore $0 from $1"
+		mv Documents Documents.old
+		tar xzf ${BDIR}/angrybirds-ipad/documents.tar.gz
+	fi
+fi

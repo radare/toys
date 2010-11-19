@@ -1,0 +1,14 @@
+#!/bin/sh
+cd /var/mobile/Applications/
+cd */AoZ.app/..
+if [ $? = 0 ]; then
+	if [ -z "$1" ]; then
+		echo "==> Backup for $0"
+		mkdir -p ${BDIR}/aoz
+		tar czf ${BDIR}/aoz/documents.tar.gz Documents
+	else
+		echo "==> Restore $0 from $1"
+		mv Documents Documents.old
+		tar xzf ${BDIR}/aoz/documents.tar.gz
+	fi
+fi

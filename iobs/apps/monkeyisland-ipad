@@ -1,0 +1,13 @@
+#!/bin/sh
+cd /var/mobile/Applications/
+cd */miseipad.app/..
+if [ $? = 0 ]; then
+	if [ -z "$1" ]; then
+		echo "==> Backup for $0"
+		mkdir -p ${BDIR}/monkeyisland-ipad
+		tar czf ${BDIR}/monkeyisland-ipad/prefs.tar.gz Library/Preferences
+	else
+		echo "==> Restore $0 from $1"
+		tar xzvf prefs.tar.gz ${BDIR}/monkeyisland-ipad/
+	fi
+fi

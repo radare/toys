@@ -1,0 +1,12 @@
+#!/bin/sh
+cd /var/mobile/Library/Notes
+if [ $? = 0 ]; then
+	if [ -z "$1" ]; then
+		echo "==> Backup for $0"
+		mkdir -p ${BDIR}/notes
+		cp notes.db ${BDIR}/notes
+	else
+		echo "==> Restore $0 from $1"
+		cp ${BDIR}/notes/notes.db .
+	fi
+fi

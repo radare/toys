@@ -1,0 +1,9 @@
+#!/bin/sh
+TYPE=$1
+if [ -z "${TYPE}" ]; then
+	curl -s www.di.fm | grep pls | cut -d '"' -f 2| cut -d / -f 5 | sed -e s,.pls,, |sort | uniq
+else
+	URL=http://listen.di.fm/public3/${TYPE}.pls
+	STREAM=$(curl -s ${URL} | grep File1 |cut -d = -f 2)
+	mplayer ${STREAM}
+fi

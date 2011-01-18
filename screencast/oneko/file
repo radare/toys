@@ -1,0 +1,406 @@
+execve("./oneko", ["./oneko"], [/* 44 vars */]) = 0
+brk(0)                                  = 0x89fb000
+mmap2(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xb77ec000
+access("/etc/ld.so.preload", R_OK)      = -1 ENOENT (No such file or directory)
+open("/etc/ld.so.cache", O_RDONLY)      = 3
+fstat64(3, {st_mode=S_IFREG|0644, st_size=149286, ...}) = 0
+mmap2(NULL, 149286, PROT_READ, MAP_PRIVATE, 3, 0) = 0xb77c7000
+close(3)                                = 0
+open("/usr/lib/libXmu.so.6", O_RDONLY)  = 3
+read(3, "\177ELF\1\1\1\0\0\0\0\0\0\0\0\0\3\0\3\0\1\0\0\0\200E\0\0004\0\0\0"..., 512) = 512
+fstat64(3, {st_mode=S_IFREG|0755, st_size=85640, ...}) = 0
+mmap2(NULL, 89488, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_DENYWRITE, 3, 0) = 0xb77b1000
+mmap2(0xb77c6000, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x14) = 0xb77c6000
+close(3)                                = 0
+open("/usr/lib/libXext.so.6", O_RDONLY) = 3
+read(3, "\177ELF\1\1\1\0\0\0\0\0\0\0\0\0\3\0\3\0\1\0\0\0\300%\0\0004\0\0\0"..., 512) = 512
+fstat64(3, {st_mode=S_IFREG|0755, st_size=56136, ...}) = 0
+mmap2(NULL, 55316, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_DENYWRITE, 3, 0) = 0xb77a3000
+mmap2(0xb77b0000, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0xd) = 0xb77b0000
+close(3)                                = 0
+open("/usr/lib/libX11.so.6", O_RDONLY)  = 3
+read(3, "\177ELF\1\1\1\0\0\0\0\0\0\0\0\0\3\0\3\0\1\0\0\0`?\1\0004\0\0\0"..., 512) = 512
+fstat64(3, {st_mode=S_IFREG|0755, st_size=1155908, ...}) = 0
+mmap2(NULL, 1155892, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_DENYWRITE, 3, 0) = 0xb7688000
+mmap2(0xb779f000, 12288, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x117) = 0xb779f000
+mmap2(0xb77a2000, 820, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS, -1, 0) = 0xb77a2000
+close(3)                                = 0
+open("/lib/libm.so.6", O_RDONLY)        = 3
+read(3, "\177ELF\1\1\1\0\0\0\0\0\0\0\0\0\3\0\3\0\1\0\0\0@4\0\0004\0\0\0"..., 512) = 512
+fstat64(3, {st_mode=S_IFREG|0755, st_size=145228, ...}) = 0
+mmap2(NULL, 147584, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_DENYWRITE, 3, 0) = 0xb7663000
+mmap2(0xb7686000, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x22) = 0xb7686000
+close(3)                                = 0
+open("/lib/libc.so.6", O_RDONLY)        = 3
+read(3, "\177ELF\1\1\1\0\0\0\0\0\0\0\0\0\3\0\3\0\1\0\0\0\300m\1\0004\0\0\0"..., 512) = 512
+fstat64(3, {st_mode=S_IFREG|0755, st_size=1347968, ...}) = 0
+mmap2(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xb7662000
+mmap2(NULL, 1358280, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_DENYWRITE, 3, 0) = 0xb7516000
+mprotect(0xb765b000, 4096, PROT_NONE)   = 0
+mmap2(0xb765c000, 12288, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x145) = 0xb765c000
+mmap2(0xb765f000, 10696, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS, -1, 0) = 0xb765f000
+close(3)                                = 0
+open("/usr/lib/libXt.so.6", O_RDONLY)   = 3
+read(3, "\177ELF\1\1\1\0\0\0\0\0\0\0\0\0\3\0\3\0\1\0\0\0`\267\0\0004\0\0\0"..., 512) = 512
+fstat64(3, {st_mode=S_IFREG|0755, st_size=326580, ...}) = 0
+mmap2(NULL, 331280, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_DENYWRITE, 3, 0) = 0xb74c5000
+mmap2(0xb7512000, 16384, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x4c) = 0xb7512000
+close(3)                                = 0
+open("/usr/lib/libSM.so.6", O_RDONLY)   = 3
+read(3, "\177ELF\1\1\1\0\0\0\0\0\0\0\0\0\3\0\3\0\1\0\0\0000\23\0\0004\0\0\0"..., 512) = 512
+fstat64(3, {st_mode=S_IFREG|0755, st_size=24948, ...}) = 0
+mmap2(NULL, 27908, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_DENYWRITE, 3, 0) = 0xb74be000
+mmap2(0xb74c4000, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x5) = 0xb74c4000
+close(3)                                = 0
+open("/usr/lib/libICE.so.6", O_RDONLY)  = 3
+read(3, "\177ELF\1\1\1\0\0\0\0\0\0\0\0\0\3\0\3\0\1\0\0\0p3\0\0004\0\0\0"..., 512) = 512
+fstat64(3, {st_mode=S_IFREG|0755, st_size=82800, ...}) = 0
+mmap2(NULL, 93040, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_DENYWRITE, 3, 0) = 0xb74a7000
+mmap2(0xb74bb000, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x13) = 0xb74bb000
+mmap2(0xb74bc000, 7024, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS, -1, 0) = 0xb74bc000
+close(3)                                = 0
+open("/usr/lib/libxcb.so.1", O_RDONLY)  = 3
+read(3, "\177ELF\1\1\1\0\0\0\0\0\0\0\0\0\3\0\3\0\1\0\0\0Pn\0\0004\0\0\0"..., 512) = 512
+fstat64(3, {st_mode=S_IFREG|0755, st_size=94388, ...}) = 0
+mmap2(NULL, 97304, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_DENYWRITE, 3, 0) = 0xb748f000
+mmap2(0xb74a6000, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x16) = 0xb74a6000
+close(3)                                = 0
+open("/lib/libdl.so.2", O_RDONLY)       = 3
+read(3, "\177ELF\1\1\1\0\0\0\0\0\0\0\0\0\3\0\3\0\1\0\0\0 \n\0\0004\0\0\0"..., 512) = 512
+fstat64(3, {st_mode=S_IFREG|0755, st_size=9668, ...}) = 0
+mmap2(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xb748e000
+mmap2(NULL, 12408, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_DENYWRITE, 3, 0) = 0xb748a000
+mmap2(0xb748c000, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x1) = 0xb748c000
+close(3)                                = 0
+open("/lib/libuuid.so.1", O_RDONLY)     = 3
+read(3, "\177ELF\1\1\1\0\0\0\0\0\0\0\0\0\3\0\3\0\1\0\0\0@\16\0\0004\0\0\0"..., 512) = 512
+fstat64(3, {st_mode=S_IFREG|0755, st_size=12952, ...}) = 0
+mmap2(NULL, 15688, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_DENYWRITE, 3, 0) = 0xb7486000
+mmap2(0xb7489000, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x2) = 0xb7489000
+close(3)                                = 0
+open("/usr/lib/libXau.so.6", O_RDONLY)  = 3
+read(3, "\177ELF\1\1\1\0\0\0\0\0\0\0\0\0\3\0\3\0\1\0\0\0\300\10\0\0004\0\0\0"..., 512) = 512
+fstat64(3, {st_mode=S_IFREG|0755, st_size=7200, ...}) = 0
+mmap2(NULL, 10112, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_DENYWRITE, 3, 0) = 0xb7483000
+mmap2(0xb7485000, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x1) = 0xb7485000
+close(3)                                = 0
+open("/usr/lib/libXdmcp.so.6", O_RDONLY) = 3
+read(3, "\177ELF\1\1\1\0\0\0\0\0\0\0\0\0\3\0\3\0\1\0\0\0 \r\0\0004\0\0\0"..., 512) = 512
+fstat64(3, {st_mode=S_IFREG|0755, st_size=16168, ...}) = 0
+mmap2(NULL, 19112, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_DENYWRITE, 3, 0) = 0xb747e000
+mmap2(0xb7482000, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x3) = 0xb7482000
+close(3)                                = 0
+mmap2(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xb747d000
+mmap2(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xb747c000
+set_thread_area({entry_number:-1 -> 6, base_addr:0xb747c700, limit:1048575, seg_32bit:1, contents:0, read_exec_only:0, limit_in_pages:1, seg_not_present:0, useable:1}) = 0
+mprotect(0xb748c000, 4096, PROT_READ)   = 0
+mprotect(0xb765c000, 8192, PROT_READ)   = 0
+mprotect(0xb7686000, 4096, PROT_READ)   = 0
+mprotect(0xb780a000, 4096, PROT_READ)   = 0
+munmap(0xb77c7000, 149286)              = 0
+brk(0)                                  = 0x89fb000
+brk(0x8a1c000)                          = 0x8a1c000
+open("/usr/X386/lib/X11/app-defaults/Oneko", O_RDONLY) = -1 ENOENT (No such file or directory)
+socket(PF_FILE, SOCK_STREAM|SOCK_CLOEXEC, 0) = 3
+connect(3, {sa_family=AF_FILE, path=@"/tmp/.X11-unix/X0"}, 20) = 0
+getpeername(3, {sa_family=AF_FILE, path=@"/tmp/.X11-unix/X0"}, [20]) = 0
+uname({sys="Linux", node="bitbox", ...}) = 0
+access("/home/pancake/.Xauthority", R_OK) = 0
+open("/home/pancake/.Xauthority", O_RDONLY) = 4
+fstat64(4, {st_mode=S_IFREG|0600, st_size=100, ...}) = 0
+mmap2(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xb77eb000
+read(4, "\1\0\0\6bitbox\0\0010\0\22MIT-MAGIC-COOKIE-"..., 4096) = 100
+read(4, "", 4096)                       = 0
+close(4)                                = 0
+munmap(0xb77eb000, 4096)                = 0
+getsockname(3, {sa_family=AF_FILE, NULL}, [2]) = 0
+fcntl64(3, F_GETFL)                     = 0x2 (flags O_RDWR)
+fcntl64(3, F_SETFL, O_RDWR|O_NONBLOCK)  = 0
+fcntl64(3, F_SETFD, FD_CLOEXEC)         = 0
+poll([{fd=3, events=POLLIN|POLLOUT}], 1, -1) = 1 ([{fd=3, revents=POLLOUT}])
+writev(3, [{"l\0\v\0\0\0\22\0\20\0\0\0", 12}, {"", 0}, {"MIT-MAGIC-COOKIE-1", 18}, {"\0\0", 2}, {"\3~Y\245[\373}g\333\36KfD\367|\37", 16}, {"", 0}], 6) = 48
+read(3, "\1\0\v\0\0\0+\2", 8)           = 8
+read(3, "\360Y\246\0\0\0\0\2\377\377\37\0\0\1\0\0\24\0\377\377\1\7\0\0  \10\377\0\0\0\0"..., 2220) = 2220
+poll([{fd=3, events=POLLIN|POLLOUT}], 1, -1) = 1 ([{fd=3, revents=POLLOUT}])
+writev(3, [{"b\0\5\0\f\0\0\0BIG-REQUESTS", 20}], 1) = 20
+poll([{fd=3, events=POLLIN}], 1, -1)    = 1 ([{fd=3, revents=POLLIN}])
+read(3, "\1\0\1\0\0\0\0\0\1\222\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0", 4096) = 32
+poll([{fd=3, events=POLLIN|POLLOUT}], 1, -1) = 1 ([{fd=3, revents=POLLOUT}])
+writev(3, [{"\222\0\1\0", 4}], 1)       = 4
+poll([{fd=3, events=POLLIN}], 1, -1)    = 1 ([{fd=3, revents=POLLIN}])
+read(3, "\1\0\2\0\0\0\0\0\377\377?\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0", 4096) = 32
+read(3, 0x89fe4f0, 4096)                = -1 EAGAIN (Resource temporarily unavailable)
+poll([{fd=3, events=POLLIN|POLLOUT}], 1, -1) = 1 ([{fd=3, revents=POLLOUT}])
+writev(3, [{"7\0\5\0\0\0\0\2]\1\0\0\10\0\0\0\377\377\377\0\24\0\6\0]\1\0\0\27\0\0\0"..., 44}, {NULL, 0}, {"", 0}], 3) = 44
+poll([{fd=3, events=POLLIN}], 1, -1)    = 1 ([{fd=3, revents=POLLIN}])
+read(3, "\1\0\4\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0", 4096) = 32
+read(3, 0x89fe4f0, 4096)                = -1 EAGAIN (Resource temporarily unavailable)
+poll([{fd=3, events=POLLIN|POLLOUT}], 1, -1) = 1 ([{fd=3, revents=POLLOUT}])
+writev(3, [{"b\0\5\0\t\0\0\2", 8}, {"XKEYBOARD", 9}, {"\0\0\0", 3}], 3) = 20
+poll([{fd=3, events=POLLIN}], 1, -1)    = 1 ([{fd=3, revents=POLLIN}])
+read(3, "\1\0\5\0\0\0\0\0\1\224w\252\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0", 4096) = 32
+read(3, 0x89fe4f0, 4096)                = -1 EAGAIN (Resource temporarily unavailable)
+read(3, 0x89fe4f0, 4096)                = -1 EAGAIN (Resource temporarily unavailable)
+poll([{fd=3, events=POLLIN|POLLOUT}], 1, -1) = 1 ([{fd=3, revents=POLLOUT}])
+writev(3, [{"\224\0\2\0\1\0\0\0", 8}, {NULL, 0}, {"", 0}], 3) = 8
+poll([{fd=3, events=POLLIN}], 1, -1)    = 1 ([{fd=3, revents=POLLIN}])
+read(3, "\1\1\6\0\0\0\0\0\1\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0", 4096) = 32
+read(3, 0x89fe4f0, 4096)                = -1 EAGAIN (Resource temporarily unavailable)
+read(3, 0x89fe4f0, 4096)                = -1 EAGAIN (Resource temporarily unavailable)
+open("/home/pancake/.Xdefaults", O_RDONLY) = -1 ENOENT (No such file or directory)
+geteuid32()                             = 1000
+socket(PF_FILE, SOCK_STREAM|SOCK_CLOEXEC|SOCK_NONBLOCK, 0) = 4
+connect(4, {sa_family=AF_FILE, path="/var/run/nscd/socket"}, 110) = -1 ENOENT (No such file or directory)
+close(4)                                = 0
+socket(PF_FILE, SOCK_STREAM|SOCK_CLOEXEC|SOCK_NONBLOCK, 0) = 4
+connect(4, {sa_family=AF_FILE, path="/var/run/nscd/socket"}, 110) = -1 ENOENT (No such file or directory)
+close(4)                                = 0
+open("/etc/nsswitch.conf", O_RDONLY)    = 4
+fstat64(4, {st_mode=S_IFREG|0644, st_size=223, ...}) = 0
+mmap2(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xb77eb000
+read(4, "# Begin /etc/nsswitch.conf\n\npass"..., 4096) = 223
+read(4, "", 4096)                       = 0
+close(4)                                = 0
+munmap(0xb77eb000, 4096)                = 0
+open("/etc/ld.so.cache", O_RDONLY)      = 4
+fstat64(4, {st_mode=S_IFREG|0644, st_size=149286, ...}) = 0
+mmap2(NULL, 149286, PROT_READ, MAP_PRIVATE, 4, 0) = 0xb77c7000
+close(4)                                = 0
+open("/lib/libnss_files.so.2", O_RDONLY) = 4
+read(4, "\177ELF\1\1\1\0\0\0\0\0\0\0\0\0\3\0\3\0\1\0\0\0\220\31\0\0004\0\0\0"..., 512) = 512
+fstat64(4, {st_mode=S_IFREG|0755, st_size=38392, ...}) = 0
+mmap2(NULL, 41664, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_DENYWRITE, 4, 0) = 0xb7471000
+mmap2(0xb747a000, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 4, 0x8) = 0xb747a000
+close(4)                                = 0
+mprotect(0xb747a000, 4096, PROT_READ)   = 0
+munmap(0xb77c7000, 149286)              = 0
+open("/etc/passwd", O_RDONLY|O_CLOEXEC) = 4
+fstat64(4, {st_mode=S_IFREG|0644, st_size=600, ...}) = 0
+mmap2(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xb77eb000
+read(4, "root:x:0:0:root:/root:/bin/bash\n"..., 4096) = 600
+close(4)                                = 0
+munmap(0xb77eb000, 4096)                = 0
+poll([{fd=3, events=POLLIN|POLLOUT}], 1, -1) = 1 ([{fd=3, revents=POLLOUT}])
+writev(3, [{"b\0\4\0\5\0\0\0", 8}, {"SHAPE", 5}, {"\0\0\0", 3}], 3) = 16
+poll([{fd=3, events=POLLIN}], 1, -1)    = 1 ([{fd=3, revents=POLLIN}])
+read(3, "\1\0\7\0\0\0\0\0\1\216b\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0", 4096) = 32
+read(3, 0x89fe4f0, 4096)                = -1 EAGAIN (Resource temporarily unavailable)
+read(3, 0x89fe4f0, 4096)                = -1 EAGAIN (Resource temporarily unavailable)
+poll([{fd=3, events=POLLIN|POLLOUT}], 1, -1) = 1 ([{fd=3, revents=POLLOUT}])
+writev(3, [{"b\0\10\0\27\0\0\0", 8}, {"Generic Event Extension", 23}, {"\0", 1}], 3) = 32
+poll([{fd=3, events=POLLIN}], 1, -1)    = 1 ([{fd=3, revents=POLLIN}])
+read(3, "\1\0\10\0\0\0\0\0\1\215\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0", 4096) = 32
+read(3, 0x89fe4f0, 4096)                = -1 EAGAIN (Resource temporarily unavailable)
+read(3, 0x89fe4f0, 4096)                = -1 EAGAIN (Resource temporarily unavailable)
+poll([{fd=3, events=POLLIN|POLLOUT}], 1, -1) = 1 ([{fd=3, revents=POLLOUT}])
+writev(3, [{"\215\0\2\0\1\0\0\0", 8}, {NULL, 0}, {"", 0}], 3) = 8
+poll([{fd=3, events=POLLIN}], 1, -1)    = 1 ([{fd=3, revents=POLLIN}])
+read(3, "\1\0\t\0\0\0\0\0\1\0\0\0'\0\0\0\0\0\0\0\0\0\0\0\370n,\n\372\372\16\10", 4096) = 32
+read(3, 0x89fe4f0, 4096)                = -1 EAGAIN (Resource temporarily unavailable)
+read(3, 0x89fe4f0, 4096)                = -1 EAGAIN (Resource temporarily unavailable)
+poll([{fd=3, events=POLLIN|POLLOUT}], 1, -1) = 1 ([{fd=3, revents=POLLOUT}])
+writev(3, [{"\16\0\2\0]\1\0\0", 8}, {NULL, 0}, {"", 0}], 3) = 8
+poll([{fd=3, events=POLLIN}], 1, -1)    = 1 ([{fd=3, revents=POLLIN}])
+read(3, "\1\30\n\0\0\0\0\0]\1\0\0\0\0\0\0\0\0178\4\0\0\0\0\0\0\0\0\0\0\0\0", 4096) = 32
+read(3, 0x89fe4f0, 4096)                = -1 EAGAIN (Resource temporarily unavailable)
+read(3, 0x89fe4f0, 4096)                = -1 EAGAIN (Resource temporarily unavailable)
+poll([{fd=3, events=POLLIN|POLLOUT}], 1, -1) = 1 ([{fd=3, revents=POLLOUT}])
+writev(3, [{"\20\1\t\0\33\0\0\0XDCCC_LINEAR_RGB_CORRECT"..., 36}, {NULL, 0}, {"", 0}], 3) = 36
+poll([{fd=3, events=POLLIN}], 1, -1)    = 1 ([{fd=3, revents=POLLIN}])
+read(3, "\1\0\v\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0", 4096) = 32
+read(3, 0x89fe4f0, 4096)                = -1 EAGAIN (Resource temporarily unavailable)
+read(3, 0x89fe4f0, 4096)                = -1 EAGAIN (Resource temporarily unavailable)
+poll([{fd=3, events=POLLIN|POLLOUT}], 1, -1) = 1 ([{fd=3, revents=POLLOUT}])
+writev(3, [{"\20\1\t\0\31\0\0\0XDCCC_LINEAR_RGB_MATRICE"..., 36}, {NULL, 0}, {"", 0}], 3) = 36
+poll([{fd=3, events=POLLIN}], 1, -1)    = 1 ([{fd=3, revents=POLLIN}])
+read(3, "\1\0\f\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0", 4096) = 32
+read(3, 0x89fe4f0, 4096)                = -1 EAGAIN (Resource temporarily unavailable)
+read(3, 0x89fe4f0, 4096)                = -1 EAGAIN (Resource temporarily unavailable)
+stat64("/usr/lib/X11/Xcms.txt", {st_mode=S_IFREG|0644, st_size=1723, ...}) = 0
+open("/usr/lib/X11/Xcms.txt", O_RDONLY) = 4
+fstat64(4, {st_mode=S_IFREG|0644, st_size=1723, ...}) = 0
+mmap2(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xb77eb000
+read(4, "/*\n * (c) Copyright 1990 1991 Te"..., 4096) = 1723
+_llseek(4, 0, [0], SEEK_SET)            = 0
+read(4, "/*\n * (c) Copyright 1990 1991 Te"..., 4096) = 1723
+close(4)                                = 0
+munmap(0xb77eb000, 4096)                = 0
+poll([{fd=3, events=POLLIN|POLLOUT}], 1, -1) = 1 ([{fd=3, revents=POLLOUT}])
+writev(3, [{"\\\1\5\0 \0\0\0\5\0CCblackEAR", 20}, {NULL, 0}, {"", 0}], 3) = 20
+poll([{fd=3, events=POLLIN}], 1, -1)    = 1 ([{fd=3, revents=POLLIN}])
+read(3, "\1\0\r\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\370n,\n", 4096) = 32
+read(3, 0x89fe4f0, 4096)                = -1 EAGAIN (Resource temporarily unavailable)
+read(3, 0x89fe4f0, 4096)                = -1 EAGAIN (Resource temporarily unavailable)
+poll([{fd=3, events=POLLIN|POLLOUT}], 1, -1) = 1 ([{fd=3, revents=POLLOUT}])
+writev(3, [{"T\1\4\0 \0\0\0\0\0\0\0\0\0ac", 16}, {NULL, 0}, {"", 0}], 3) = 16
+poll([{fd=3, events=POLLIN}], 1, -1)    = 1 ([{fd=3, revents=POLLIN}])
+read(3, "\1\0\16\0\0\0\0\0\0\0\0\0\0\0,\n\0\0\0\0\0\0\0\0\0\0\0\0\370n,\n", 4096) = 32
+read(3, 0x89fe4f0, 4096)                = -1 EAGAIN (Resource temporarily unavailable)
+read(3, 0x89fe4f0, 4096)                = -1 EAGAIN (Resource temporarily unavailable)
+poll([{fd=3, events=POLLIN|POLLOUT}], 1, -1) = 1 ([{fd=3, revents=POLLOUT}])
+writev(3, [{"\\\1\5\0 \0\0\0\5\0\0\0whiteEAR", 20}, {NULL, 0}, {"", 0}], 3) = 20
+poll([{fd=3, events=POLLIN}], 1, -1)    = 1 ([{fd=3, revents=POLLIN}])
+read(3, "\1\0\17\0\0\0\0\0\377\377\377\377\377\377\377\377\377\377\377\377\0\0\0\0\0\0\0\0\370n,\n", 4096) = 32
+read(3, 0x89fe4f0, 4096)                = -1 EAGAIN (Resource temporarily unavailable)
+read(3, 0x89fe4f0, 4096)                = -1 EAGAIN (Resource temporarily unavailable)
+poll([{fd=3, events=POLLIN|POLLOUT}], 1, -1) = 1 ([{fd=3, revents=POLLOUT}])
+writev(3, [{"T\1\4\0 \0\0\0\377\377\377\377\377\377it", 16}, {NULL, 0}, {"", 0}], 3) = 16
+poll([{fd=3, events=POLLIN}], 1, -1)    = 1 ([{fd=3, revents=POLLIN}])
+read(3, "\1\0\20\0\0\0\0\0\377\377\377\377\377\377,\n\377\377\377\0\0\0\0\0\0\0\0\0\370n,\n", 4096) = 32
+read(3, 0x89fe4f0, 4096)                = -1 EAGAIN (Resource temporarily unavailable)
+read(3, 0x89fe4f0, 4096)                = -1 EAGAIN (Resource temporarily unavailable)
+poll([{fd=3, events=POLLIN|POLLOUT}], 1, -1) = 1 ([{fd=3, revents=POLLOUT}])
+writev(3, [{"\\\1\5\0 \0\0\0\5\0\377\377blackEAR", 20}, {NULL, 0}, {"", 0}], 3) = 20
+poll([{fd=3, events=POLLIN}], 1, -1)    = 1 ([{fd=3, revents=POLLIN}])
+read(3, "\1\0\21\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\370n,\n", 4096) = 32
+read(3, 0x89fe4f0, 4096)                = -1 EAGAIN (Resource temporarily unavailable)
+read(3, 0x89fe4f0, 4096)                = -1 EAGAIN (Resource temporarily unavailable)
+poll([{fd=3, events=POLLIN|POLLOUT}], 1, -1) = 1 ([{fd=3, revents=POLLOUT}])
+writev(3, [{"T\1\4\0 \0\0\0\0\0\0\0\0\0ac", 16}, {NULL, 0}, {"", 0}], 3) = 16
+poll([{fd=3, events=POLLIN}], 1, -1)    = 1 ([{fd=3, revents=POLLIN}])
+read(3, "\1\0\22\0\0\0\0\0\0\0\0\0\0\0,\n\0\0\0\0\0\0\0\0\0\0\0\0\370n,\n", 4096) = 32
+read(3, 0x89fe4f0, 4096)                = -1 EAGAIN (Resource temporarily unavailable)
+read(3, 0x89fe4f0, 4096)                = -1 EAGAIN (Resource temporarily unavailable)
+poll([{fd=3, events=POLLIN|POLLOUT}], 1, -1) = 1 ([{fd=3, revents=POLLOUT}])
+writev(3, [{"\\\1\5\0 \0\0\0\5\0\0\0whiteEAR", 20}, {NULL, 0}, {"", 0}], 3) = 20
+poll([{fd=3, events=POLLIN}], 1, -1)    = 1 ([{fd=3, revents=POLLIN}])
+read(3, "\1\0\23\0\0\0\0\0\377\377\377\377\377\377\377\377\377\377\377\377\0\0\0\0\0\0\0\0\370n,\n", 4096) = 32
+read(3, 0x89fe4f0, 4096)                = -1 EAGAIN (Resource temporarily unavailable)
+read(3, 0x89fe4f0, 4096)                = -1 EAGAIN (Resource temporarily unavailable)
+poll([{fd=3, events=POLLIN|POLLOUT}], 1, -1) = 1 ([{fd=3, revents=POLLOUT}])
+writev(3, [{"T\1\4\0 \0\0\0\377\377\377\377\377\377it", 16}, {NULL, 0}, {"", 0}], 3) = 16
+poll([{fd=3, events=POLLIN}], 1, -1)    = 1 ([{fd=3, revents=POLLIN}])
+read(3, "\1\0\24\0\0\0\0\0\377\377\377\377\377\377,\n\377\377\377\0\0\0\0\0\0\0\0\0\370n,\n", 4096) = 32
+read(3, 0x89fe4f0, 4096)                = -1 EAGAIN (Resource temporarily unavailable)
+read(3, 0x89fe4f0, 4096)                = -1 EAGAIN (Resource temporarily unavailable)
+poll([{fd=3, events=POLLIN|POLLOUT}], 1, -1) = 1 ([{fd=3, revents=POLLOUT}])
+writev(3, [{"\\\1\5\0 \0\0\0\5\0\377\377blackEAR", 20}, {NULL, 0}, {"", 0}], 3) = 20
+poll([{fd=3, events=POLLIN}], 1, -1)    = 1 ([{fd=3, revents=POLLIN}])
+read(3, "\1\0\25\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\370n,\n", 4096) = 32
+read(3, 0x89fe4f0, 4096)                = -1 EAGAIN (Resource temporarily unavailable)
+read(3, 0x89fe4f0, 4096)                = -1 EAGAIN (Resource temporarily unavailable)
+poll([{fd=3, events=POLLIN|POLLOUT}], 1, -1) = 1 ([{fd=3, revents=POLLOUT}])
+writev(3, [{"T\1\4\0 \0\0\0\0\0\0\0\0\0ac", 16}, {NULL, 0}, {"", 0}], 3) = 16
+poll([{fd=3, events=POLLIN}], 1, -1)    = 1 ([{fd=3, revents=POLLIN}])
+read(3, "\1\0\26\0\0\0\0\0\0\0\0\0\0\0,\n\0\0\0\0\0\0\0\0\0\0\0\0\370n,\n", 4096) = 32
+read(3, 0x89fe4f0, 4096)                = -1 EAGAIN (Resource temporarily unavailable)
+read(3, 0x89fe4f0, 4096)                = -1 EAGAIN (Resource temporarily unavailable)
+poll([{fd=3, events=POLLIN|POLLOUT}], 1, -1) = 1 ([{fd=3, revents=POLLOUT}])
+writev(3, [{"\\\1\5\0 \0\0\0\5\0\0\0whiteEAR", 20}, {NULL, 0}, {"", 0}], 3) = 20
+poll([{fd=3, events=POLLIN}], 1, -1)    = 1 ([{fd=3, revents=POLLIN}])
+read(3, "\1\0\27\0\0\0\0\0\377\377\377\377\377\377\377\377\377\377\377\377\0\0\0\0\0\0\0\0\370n,\n", 4096) = 32
+read(3, 0x89fe4f0, 4096)                = -1 EAGAIN (Resource temporarily unavailable)
+read(3, 0x89fe4f0, 4096)                = -1 EAGAIN (Resource temporarily unavailable)
+poll([{fd=3, events=POLLIN|POLLOUT}], 1, -1) = 1 ([{fd=3, revents=POLLOUT}])
+writev(3, [{"T\1\4\0 \0\0\0\377\377\377\377\377\377it", 16}, {NULL, 0}, {"", 0}], 3) = 16
+poll([{fd=3, events=POLLIN}], 1, -1)    = 1 ([{fd=3, revents=POLLIN}])
+read(3, "\1\0\30\0\0\0\0\0\377\377\377\377\377\377,\n\377\377\377\0\0\0\0\0\0\0\0\0\370n,\n", 4096) = 32
+read(3, 0x89fe4f0, 4096)                = -1 EAGAIN (Resource temporarily unavailable)
+read(3, 0x89fe4f0, 4096)                = -1 EAGAIN (Resource temporarily unavailable)
+poll([{fd=3, events=POLLIN|POLLOUT}], 1, -1) = 1 ([{fd=3, revents=POLLOUT}])
+writev(3, [{"\\\1\5\0 \0\0\0\5\0\377\377whiteEAR", 20}, {NULL, 0}, {"", 0}], 3) = 20
+poll([{fd=3, events=POLLIN}], 1, -1)    = 1 ([{fd=3, revents=POLLIN}])
+read(3, "\1\0\31\0\0\0\0\0\377\377\377\377\377\377\377\377\377\377\377\377\0\0\0\0\0\0\0\0\370n,\n", 4096) = 32
+read(3, 0x89fe4f0, 4096)                = -1 EAGAIN (Resource temporarily unavailable)
+read(3, 0x89fe4f0, 4096)                = -1 EAGAIN (Resource temporarily unavailable)
+poll([{fd=3, events=POLLIN|POLLOUT}], 1, -1) = 1 ([{fd=3, revents=POLLOUT}])
+writev(3, [{"T\1\4\0 \0\0\0\377\377\377\377\377\377it", 16}, {NULL, 0}, {"", 0}], 3) = 16
+poll([{fd=3, events=POLLIN}], 1, -1)    = 1 ([{fd=3, revents=POLLIN}])
+read(3, "\1\0\32\0\0\0\0\0\377\377\377\377\377\377,\n\377\377\377\0\0\0\0\0\0\0\0\0\370n,\n", 4096) = 32
+read(3, 0x89fe4f0, 4096)                = -1 EAGAIN (Resource temporarily unavailable)
+read(3, 0x89fe4f0, 4096)                = -1 EAGAIN (Resource temporarily unavailable)
+poll([{fd=3, events=POLLIN|POLLOUT}], 1, -1) = 1 ([{fd=3, revents=POLLOUT}])
+writev(3, [{"\\\1\5\0 \0\0\0\5\0\377\377blackEAR", 20}, {NULL, 0}, {"", 0}], 3) = 20
+poll([{fd=3, events=POLLIN}], 1, -1)    = 1 ([{fd=3, revents=POLLIN}])
+read(3, "\1\0\33\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\370n,\n", 4096) = 32
+read(3, 0x89fe4f0, 4096)                = -1 EAGAIN (Resource temporarily unavailable)
+read(3, 0x89fe4f0, 4096)                = -1 EAGAIN (Resource temporarily unavailable)
+poll([{fd=3, events=POLLIN|POLLOUT}], 1, -1) = 1 ([{fd=3, revents=POLLOUT}])
+writev(3, [{"T\1\4\0 \0\0\0\0\0\0\0\0\0ac", 16}, {NULL, 0}, {"", 0}], 3) = 16
+poll([{fd=3, events=POLLIN}], 1, -1)    = 1 ([{fd=3, revents=POLLIN}])
+read(3, "\1\0\34\0\0\0\0\0\0\0\0\0\0\0,\n\0\0\0\0\0\0\0\0\0\0\0\0\370n,\n", 4096) = 32
+read(3, 0x89fe4f0, 4096)                = -1 EAGAIN (Resource temporarily unavailable)
+read(3, 0x89fe4f0, 4096)                = -1 EAGAIN (Resource temporarily unavailable)
+open("/usr/X386/lib/X11/oneko/cursor_mask.xbm", O_RDONLY) = 4
+fstat64(4, {st_mode=S_IFREG|0644, st_size=320, ...}) = 0
+mmap2(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xb77eb000
+read(4, "#define cursor_mask_width 17\n#de"..., 4096) = 320
+read(4, "", 4096)                       = 0
+close(4)                                = 0
+munmap(0xb77eb000, 4096)                = 0
+open("/etc/ld.so.cache", O_RDONLY)      = 4
+fstat64(4, {st_mode=S_IFREG|0644, st_size=149286, ...}) = 0
+mmap2(NULL, 149286, PROT_READ, MAP_PRIVATE, 4, 0) = 0xb77c7000
+close(4)                                = 0
+open("/usr/lib/libXcursor.so.1", O_RDONLY) = 4
+read(4, "\177ELF\1\1\1\0\0\0\0\0\0\0\0\0\3\0\3\0\1\0\0\0\200\35\0\0004\0\0\0"..., 512) = 512
+fstat64(4, {st_mode=S_IFREG|0755, st_size=32984, ...}) = 0
+mmap2(NULL, 35944, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_DENYWRITE, 4, 0) = 0xb7468000
+mmap2(0xb7470000, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 4, 0x7) = 0xb7470000
+close(4)                                = 0
+open("/usr/lib/libXrender.so.1", O_RDONLY) = 4
+read(4, "\177ELF\1\1\1\0\0\0\0\0\0\0\0\0\3\0\3\0\1\0\0\0`\22\0\0004\0\0\0"..., 512) = 512
+fstat64(4, {st_mode=S_IFREG|0755, st_size=34728, ...}) = 0
+mmap2(NULL, 29356, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_DENYWRITE, 4, 0) = 0xb7460000
+mmap2(0xb7467000, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 4, 0x7) = 0xb7467000
+close(4)                                = 0
+open("/usr/lib/libXfixes.so.3", O_RDONLY) = 4
+read(4, "\177ELF\1\1\1\0\0\0\0\0\0\0\0\0\3\0\3\0\1\0\0\0\20\16\0\0004\0\0\0"..., 512) = 512
+fstat64(4, {st_mode=S_IFREG|0755, st_size=17742, ...}) = 0
+mmap2(NULL, 17472, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_DENYWRITE, 4, 0) = 0xb745b000
+mmap2(0xb745f000, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 4, 0x3) = 0xb745f000
+close(4)                                = 0
+munmap(0xb77c7000, 149286)              = 0
+poll([{fd=3, events=POLLIN|POLLOUT}], 1, -1) = 1 ([{fd=3, revents=POLLOUT}])
+writev(3, [{"5\1\4\0\1\0\0\2]\1\0\0\21\0\f\0bE\4\0\6\0GB", 24}, {"RENDER", 6}, {"\0\0", 2}], 3) = 32
+poll([{fd=3, events=POLLIN}], 1, -1)    = 1 ([{fd=3, revents=POLLIN}])
+read(3, "\1\0\36\0\0\0\0\0\1\231\0\256\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0", 4096) = 32
+read(3, 0x89fe4f0, 4096)                = -1 EAGAIN (Resource temporarily unavailable)
+read(3, 0x89fe4f0, 4096)                = -1 EAGAIN (Resource temporarily unavailable)
+poll([{fd=3, events=POLLIN|POLLOUT}], 1, -1) = 1 ([{fd=3, revents=POLLOUT}])
+writev(3, [{"\231\0\3\0\0\0\0\0\v\0\0\0\231\1\1\0", 16}, {NULL, 0}, {"", 0}], 3) = 16
+poll([{fd=3, events=POLLIN}], 1, -1)    = 1 ([{fd=3, revents=POLLIN}])
+read(3, "\1\0\37\0\0\0\0\0\0\0\0\0\v\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"..., 4096) = 1588
+read(3, 0x89fe4f0, 4096)                = -1 EAGAIN (Resource temporarily unavailable)
+read(3, 0x89fe4f0, 4096)                = -1 EAGAIN (Resource temporarily unavailable)
+read(3, 0x89fe4f0, 4096)                = -1 EAGAIN (Resource temporarily unavailable)
+read(3, 0x89fe4f0, 4096)                = -1 EAGAIN (Resource temporarily unavailable)
+open("/home/pancake/.Xdefaults", O_RDONLY) = -1 ENOENT (No such file or directory)
+uname({sys="Linux", node="bitbox", ...}) = 0
+open("/home/pancake/.Xdefaults-bitbox", O_RDONLY) = -1 ENOENT (No such file or directory)
+open("/home/pancake/.Xdefaults", O_RDONLY) = -1 ENOENT (No such file or directory)
+uname({sys="Linux", node="bitbox", ...}) = 0
+open("/home/pancake/.Xdefaults-bitbox", O_RDONLY) = -1 ENOENT (No such file or directory)
+open("/home/pancake/.Xdefaults", O_RDONLY) = -1 ENOENT (No such file or directory)
+uname({sys="Linux", node="bitbox", ...}) = 0
+open("/home/pancake/.Xdefaults-bitbox", O_RDONLY) = -1 ENOENT (No such file or directory)
+open("/home/pancake/.Xdefaults", O_RDONLY) = -1 ENOENT (No such file or directory)
+uname({sys="Linux", node="bitbox", ...}) = 0
+open("/home/pancake/.Xdefaults-bitbox", O_RDONLY) = -1 ENOENT (No such file or directory)
+open("/home/pancake/.Xdefaults", O_RDONLY) = -1 ENOENT (No such file or directory)
+uname({sys="Linux", node="bitbox", ...}) = 0
+open("/home/pancake/.Xdefaults-bitbox", O_RDONLY) = -1 ENOENT (No such file or directory)
+open("/home/pancake/.Xdefaults", O_RDONLY) = -1 ENOENT (No such file or directory)
+uname({sys="Linux", node="bitbox", ...}) = 0
+open("/home/pancake/.Xdefaults-bitbox", O_RDONLY) = -1 ENOENT (No such file or directory)
+open("/home/pancake/.Xdefaults", O_RDONLY) = -1 ENOENT (No such file or directory)
+uname({sys="Linux", node="bitbox", ...}) = 0
+open("/home/pancake/.Xdefaults-bitbox", O_RDONLY) = -1 ENOENT (No such file or directory)
+open("/usr/X386/lib/X11/oneko/cursor.xbm", O_RDONLY) = 4
+fstat64(4, {st_mode=S_IFREG|0644, st_size=351, ...}) = 0
+mmap2(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xb77eb000
+read(4, "#define cursor_width 17\n#define "..., 4096) = 351
+read(4, "", 4096)                       = 0
+close(4)                                = 0
+munmap(0xb77eb000, 4096)                = 0
+open("/home/pancake/.icons/default/cursors/a02b02008565ee5f0769161f08400626", O_RDONLY) = -1 ENOENT (No such file or directory)
+open("/home/pancake/.icons/default/index.theme", O_RDONLY) = -1 ENOENT (No such file or directory)
+open("/usr/share/icons/default/cursors/a02b02008565ee5f0769161f08400626", O_RDONLY) = -1 ENOENT (No such file or directory)
+open("/usr/share/icons/default/index.theme", O_RDONLY) = -1 ENOENT (No such file or directory)
+open("/usr/share/pixmaps/default/cursors/a02b02008565ee5f0769161f08400626", O_RDONLY) = -1 ENOENT (No such file or directory)
+open("/usr/share/pixmaps/default/index.theme", O_RDONLY) = -1 ENOENT (No such file or directory)
+open("/usr/X386/lib/X11/oneko//oneko/mati1.xbm", O_RDONLY) = -1 ENOENT (No such file or directory)
+write(2, "/oneko: Fatal error: ", 21)   = 21
+write(2, "I can't read pixmap file /usr/X3"..., 65) = 65
+write(2, "\n", 1)                       = 1
+exit_group(-1)                          = ?

@@ -1,15 +1,26 @@
 <html>
 <head>
   <title>scrotcast</title>
-  <meta HTTP-EQUIV=REFRESH CONTENT="1;URL=index.html">
+  <!-- <meta HTTP-EQUIV=REFRESH CONTENT="1;URL=index.html">  -->
   <script>
-  auto_reload() {
-  	document.url="index.html";
-  	setTimeout("auto_reload()",1000);
+  var ots = (new Date()).getTime ()
+  function auto_reload() {
+  	//document.url="index.html";
+	var ts = (new Date ()).getTime();
+	if (ts > ots+1000) {
+		document.getElementById('foo').src = 'shot.jpg?tstamp='+ts;
+		ots = ts;
+	} else setTimeout("auto_reload()", 1000);//-(ts-ots));
   }
   </script>
+	</script>
 </head>
-<body onload="javascript:auto_reaload()">
-  <img width="780" height="506" src="shot.jpg">
+<body onload="javascript:auto_reload()">
+  <!-- <img width="780" height="506" src="shot.jpg"> -->
+  <!-- <img width="1800" height="540" src="shot.jpg"> -->
+  <!-- <img id=foo width="1200" height="600" src="shot.jpg"> -->
+  <!-- <img id=foo width="1200" height="600" src="shot.jpg" onLoad="auto_reload()"> -->
+  <!-- <img id=foo width="800" height="400" src="shot.jpg" onLoad="auto_reload()"> -->
+  <img id=foo  src="shot.jpg" onLoad="auto_reload()">
 </body>
 </html>

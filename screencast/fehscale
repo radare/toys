@@ -1,0 +1,39 @@
+#!/usr/bin/perl
+
+my $FILE = $ARGV[0];
+my $OFILE = $ARGV[1];
+
+die "No output file given\n" if ($OFILE eq "");
+die "No file given\n" unless (-e $FILE);
+
+chomp($PWD=`pwd`);
+$W=640; # default width
+$W=128 if ($OFILE=~/tg.lil/);
+$W=1000;
+
+$WH=`feh -l $FILE | tail -n 1 | awk '{print \$3" "\$4}'`;
+$WH=~/(.*) (.*)/;
+$w = $width  = int($1);
+$h = $height = int($2);
+
+print "Input: $width x $height\n";
+print "Input file: $FILE\n";
+
+# Scaling
+$w = $W if ($width>$W);
+$h = int($height/($width/$w));
+if ($h>$W) {
+	$h = $W;
+	$w = int($width/($height/$h));
+}
+
+print "Output to $w x $h\n";
+print "Output file: $OFILE\n";
+
+#feh --thumb-width 360 --thumb-height 480 -W 360 -H 480 -O foo2.jpg -i -b foo.jpg  1x1.jpg
+#       feh -V --thumb-width 360 --thumb-height 480 -W 360 -H 480 -O foo2.jpg -b cimg0545.jpg -i foo.jpg 
+system("feh -V --thumb-width $w --thumb-height $h -W $w -H $h -O $OFILE -b '$FILE' -i '$FILE'");
+if (!-s $OFILE) {
+	unlink $OFILE;
+	die "Cannot generate $OFILE\n";
+}

@@ -1,0 +1,95 @@
+#!/bin/sh
+
+# makewarn
+#  * replace multiple files
+#  * replace single line of file with regexp
+#  * cat file:line with support for context
+# * Show solutions for various errors
+# * Allow to ignore some warns
+
+
+CTX=3
+EDITOR=vim
+function grepfileline() {
+	FILE=$1
+	LINE=$2
+	nl -nln -ba $1 | grep -C $CTX "^${LINE}\ "
+}
+
+case "$1" in
+-h)
+	cat<<EOF
+Usage: makewarn [-opts] [file]
+ -g    generate makewarn.log (make)
+ -c    run make clean
+EOF
+	exit 0
+	;;
+-g)
+	echo "make > makewarn.log 2>&1"
+	make > makewarn.log 2>&1
+	exit $?
+	;;
+-c)
+	echo "make clean"
+	make clean
+	exit $?
+	;;
+esac
+
+LOG=$1
+[ -z "${LOG}" ] && LOG=makewarn.log
+echo "Using ${LOG}..."
+
+DIR=""
+warning() {
+	FILE=$(echo ${DIR}/$1 | cut -d : -f 1)
+	LINE=$(echo ${DIR}/$1 | cut -d : -f 2)
+	MESG=$(echo ${DIR}/$1 | cut -d : -f 5-)
+	if [ ! -e "${FILE}" ]; then
+		echo "ERROR: File not found"
+		return
+	fi
+	printf "\x1b[32m"
+	echo "filename: $FILE"
+	echo "    line: $LINE"
+	echo "     msg:${MESG}"
+	if [ ${FILE} -nt ${LOG} ]; then
+		printf "\x1b[31m\n"
+		echo "WARNING: modified file.. it is already fixed?"
+	fi
+	printf "\x1b[0m\n"
+	printf "\n${FILE}:${LINE}\n\n${MESG}\n" > /tmp/msg
+	grepfileline "${FILE}" "${LINE}"
+	echo
+	echo "Do you want to fix this? (Y/n/g/q)"
+	read A
+	case "$A" in
+	g)
+		firefox "http://google.com/search?q=${MESG}"
+		;;
+	q)
+		exit 0
+		;;
+	n)
+		;;
+	*)
+		FDIR=$(dirname ${FILE})
+		cd ${FDIR}
+		${EDITOR} -c ":sp ${FILE}" -c :${LINE} /tmp/msg
+		;;
+	esac
+	#xterm -e "${EDITOR} +${LINE} ${FILE}"
+}
+
+IFS=$'\n'
+for A in $(cat ${LOG}); do
+	[ -z "$A" ] && break
+	if [ "`echo $A| grep 'Entering directory'`" ]; then
+		DIR=/$(echo $A|cut -d / -f 2-|sed -e "s,',,")
+	elif [ "`echo $A| grep ': error:'`" ]; then
+		warning "$A"
+	elif [ "`echo $A| grep ': warning:'`" ]; then
+		warning "$A"
+	fi
+done

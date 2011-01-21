@@ -5,6 +5,7 @@ all:
 	@echo This makefile will install 
 
 install:
+	cd linetools && ${MAKE} install
 	cd dhosts && ${MAKE} install
 	cp bin/* ${DESTDIR}/${PREFIX}/bin
 	cp tokipona/toki ${DESTDIR}/${PREFIX}/bin

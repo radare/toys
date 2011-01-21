@@ -10,4 +10,7 @@ lochist    : show history of LOCdiff in hg repo
 x90.es     : short link using x90.es service
 vimrc      : installed in all your homes from vim/vimrc
 makewarn   : review make logs to fix warnings
+pub        : publish file via scp and give public http uri
+i.ca       : twit using identica
+p.bin      : pastebin
 # weather-*  :  display weather information

@@ -21,7 +21,7 @@ case "$1" in
 	cat<<EOF
 Usage: makewarn [-opts] [file]
  -g    generate makewarn.log (make)
- -c    run make clean
+ -c    run make clean && make > makewarn.log
 EOF
 	exit 0
 	;;
@@ -32,7 +32,9 @@ EOF
 	;;
 -c)
 	echo "make clean"
-	make clean
+	make clean > /dev/null 2>&1
+	echo "make > makewarn.log 2>&1"
+	make > makewarn.log 2>&1
 	exit $?
 	;;
 esac
@@ -43,11 +45,12 @@ echo "Using ${LOG}..."
 
 DIR=""
 warning() {
+	ARG0=$1
 	FILE=$(echo ${DIR}/$1 | cut -d : -f 1)
 	LINE=$(echo ${DIR}/$1 | cut -d : -f 2)
 	MESG=$(echo ${DIR}/$1 | cut -d : -f 5-)
 	if [ ! -e "${FILE}" ]; then
-		echo "ERROR: File not found"
+		echo "ERROR: File not found (${FILE})"
 		return
 	fi
 	printf "\x1b[32m"
@@ -66,7 +69,8 @@ warning() {
 	read A
 	case "$A" in
 	g)
-		firefox "http://google.com/search?q=${MESG}"
+		firefox "http://google.com/search?q=\"${MESG}\""
+		warning "$ARG0"
 		;;
 	q)
 		exit 0

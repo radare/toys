@@ -1,9 +1,11 @@
 PREFIX?=/usr
+DESTDIR?=
+PFX=${DESTDIR}${PREFIX}
 
 all:
 
 install:
-	cp i.ca ${PREFIX}/bin
-	cp ttytter.pl ${PREFIX}/bin
-	cp p.bin ${PREFIX}/bin
-	cp pub ${PREFIX}/bin
+	cp i.ca ${PFX}/bin
+	cp ttytter.pl ${PFX}/bin
+	cp p.bin ${PFX}/bin
+	cp pub ${PFX}/bin

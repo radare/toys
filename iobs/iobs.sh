@@ -5,7 +5,8 @@ if [ -z "`uname -m | grep -e iPad -e iPod -e iPhone`" ]; then
 fi
 . ./CONFIG
 if [ "$1" = "-h" ]; then
-	echo "Usage: iobs [dirname]"
+	echo "Usage: APPS=... iobs [dirname]"
+	echo " APPS environ var is the list of apps to backup (default apps/*)"
 	echo " default: backup all known apps"
 	echo " dirname: restore app preferences from given dir"
 	exit 0
@@ -20,7 +21,16 @@ else
 	BDIR=${PWD}/$(date +%Y%m%d)
 fi
 export BDIR
-for a in apps/* ; do
+if [ -n "${APPS}" ]; then
+	OAPPS=""
+	for a in ${APPS} ; do
+		OAPPS=$(printf "$APPS apps/$a")
+	done
+	APPS=$OAPPS
+else
+	APPS=$(ls apps/*)
+fi
+for a in $APPS ; do
 	SKIPPED=0
 	for b in ${SKIP} ; do
 		if [ "$a" = "apps/$b" ]; then

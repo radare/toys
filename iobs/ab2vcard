@@ -1,0 +1,12 @@
+#!/bin/sh
+# iOS AddressBook SQLite to VCARD
+# Date: 2011-03-11
+# Author: pancake<at>nopcode<dot>org
+
+DB=/var/mobile/Library/AddressBook/AddressBook.sqlitedb
+
+echo 'select ABPerson.first,ABPerson.last,ABMultiValue.value from ABPerson,ABMultiValue where ABMultiValue.record_id=ABPerson.ROWID;' | sqlite3 $DB | \
+awk -F '|' '{print "BEGIN:VCARD\nVERSION:2.1\nFN:"$1$2"\nTEL;WORK;VOICE:"$3"\nEND:VCARD\n\n"}'
+
+echo 'select name,value from ABRecent;' | sqlite3 $DB | \
+awk -F '|' '{print "BEGIN:VCARD\nVERSION:2.1\nFN:"$1"\nEMAIL;PREF;INTERNET:"$2"\nEND:VCARD\n\n"}'

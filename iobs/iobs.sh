@@ -1,4 +1,8 @@
 #!/bin/sh
+if [ -z "`uname -m | grep -e iPad -e iPod -e iPhone`" ]; then
+	echo "This program only runs in iOS"
+	exit 1
+fi
 . ./CONFIG
 if [ "$1" = "-h" ]; then
 	echo "Usage: iobs [dirname]"

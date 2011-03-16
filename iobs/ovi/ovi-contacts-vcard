@@ -1,0 +1,114 @@
+#!/usr/bin/perl
+
+# Downloads contacts from Nokia OVI website and formats them as vCard to stdout
+# Authors: Jordi Gimenez
+# External consultant: Gerardo Garcia
+# Use like this: 
+#        ovi-contacts-vcard > contacts.vcd
+# and fill in your OVI username and password when required
+
+use warnings;
+use strict;
+use locale;
+use WWW::Mechanize;
+use JSON; # imports encode_json, decode_json, to_json and from_json.
+use Text::vCard;
+use Text::vCard::Addressbook;
+use Term::ReadKey;
+
+my ( $mech, $json, $contact_list, $contact, $l, $mt, $id, @contacts, $addressbook, $vcard );
+
+if(! -e "contacts.json") {
+  print STDERR "Username: ";
+  my $user = ReadLine(0);
+  chomp $user;
+  print STDERR "Password: ";
+  ReadMode('noecho');
+  my $password = ReadLine(0);
+  ReadMode('normal');
+  chomp $password;
+
+  print STDERR "\nLoading... Please wait. This can be long!";
+
+  $mech = WWW::Mechanize->new();
+
+  $mech->get( 'https://contactsui.ovi.com/' );
+
+  $mech->submit_form(
+      fields      => {
+      username    => $user,
+      password    => $password
+      });
+
+  $mech->content =~ /om.ovi.contacts.mt_g = '([^']*)'/
+    or die "zorra";
+
+  $mt = $1;
+  $mech->get("https://contactsui.ovi.com:443/contacts/secure_html/get_contacts/?view=l&size=10000&start=0&mt=$mt&format=json");
+  $json = $mech->content;
+
+  $contact_list = decode_json($json);
+
+  foreach $l (@{$contact_list->{contacts}})
+  {
+    $id = $l->{id};
+    $mech->get("https://contactsui.ovi.com:443/contacts/secure_html/get_contact_dialog/?contactId=$id&mt=$mt&format=json" );
+    $contact = decode_json($mech->content);
+    push(@contacts, $contact);
+  }
+
+  open(FH, ">contacts.json");
+  print FH encode_json(\@contacts);
+  close(FH);
+} else {
+  open(FH, "<contacts.json");
+  $json .= $_ while(<FH>);
+  close(FH);
+  @contacts = @{decode_json($json)};
+  #@contacts = @{decode_json(`cat contacts.json`)};
+}
+
+$addressbook = new Text::vCard::Addressbook();
+foreach $contact (@contacts)
+{
+  $vcard = $addressbook->add_vcard();
+  $vcard->uid($contact->{contactId});
+  my $name = $vcard->add_node({'node_type'=>'N'});
+  $name->family( ($contact->{person}->{lastname} or '') );
+  $name->given( ($contact->{person}->{firstname} or '') );
+  if($contact->{person}->{photoLarge}) {
+    my $photo = $vcard->add_node({'node_type'=>'PHOTO'});
+    $photo->add_types(["JPEG;ENCODING=BASE64"]);
+    $photo->value($contact->{person}->{photoLarge});
+  }
+  my $phone;
+  foreach $phone (@{$contact->{person}->{phones}}) {
+    my $tel = $vcard->add_node({'node_type'=>'TEL'});
+    if($phone->{type}) {
+      $tel->add_types($_ eq "MOBILE" ? "CELL" : $_)
+        foreach (split(/\./, uc($phone->{type})));
+    }
+    if($phone->{primary} && $phone->{primary} eq "TRUE") {
+      $tel->add_types('PREF');
+    }
+    $tel->value($phone->{value});
+  }
+  foreach $phone (@{$contact->{person}->{emails}}) {
+    my $tel = $vcard->add_node({'node_type'=>'EMAIL'});
+    $tel->add_types("INTERNET");
+    $tel->value($phone->{value});
+  }
+  foreach $phone (@{$contact->{person}->{addresses}}) {
+    my $tel = $vcard->add_node({'node_type'=>'ADR'});
+    $tel->add_types($phone->{type});
+    $tel->po_box($phone->{pobox});
+    $tel->extended($phone->{extendedaddress});
+    $tel->street($phone->{street});
+    $tel->city($phone->{city});
+    $tel->region($phone->{region});
+    $tel->post_code($phone->{postalcode});
+    $tel->country($phone->{country});
+  }
+}
+print $addressbook->export();
+print "\n";

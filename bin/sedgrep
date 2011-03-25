@@ -1,0 +1,23 @@
+#!/bin/sh
+# sedgrep
+
+[ "$1" ] || { echo "usage: `basename $0` [-a] pattern [file[s]]"; exit 1; }
+
+PATT=$1; shift
+if [ $PATT == "-a" ]; then
+    showall="true"
+    PATT=$1; shift
+fi
+
+if [ ! -p /proc/self/fd/1 ]; then
+    C_PATT=`echo -e '\033[33;01m'`         # yellow
+    C_NORM=`echo -e '\033[m'`              # normal
+
+    if [ "$showall" == "true" ]; then
+        sed "s¬$PATT¬$C_PATT&$C_NORM¬gi" $@
+    else
+        sed -n "s¬$PATT¬$C_PATT&$C_NORM¬gip" $@
+    fi
+else
+    sed -n "/$PATT/p" $@
+fi

@@ -1,0 +1,9 @@
+#!/bin/sh
+awk '{ 
+	if (/^+(.*)$/) {
+		print "\x1b[32m"$_"\x1b[0m";
+	} else
+	if (/^-(.*)$/) {
+		print "\x1b[31m"$_"\x1b[0m";
+	} else print;
+}'

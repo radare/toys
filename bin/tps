@@ -1,4 +1,5 @@
 #!/bin/sh
+root=/tmp/foo
 if [ -z "$1" ]; then
 	echo "Usage: tps [-idl] [arg]"
 	echo " -i targz     install package"
@@ -7,7 +8,7 @@ if [ -z "$1" ]; then
 	echo " -l [pkg]     list installed packages"
 	exit 0
 fi
-pkgdir=/var/tps
+pkgdir=$root/var/tps
 arg=$1
 pkg=$2
 case "$arg" in
@@ -15,7 +16,7 @@ case "$arg" in
 	if [ -n "$pkg" ]; then
 		pkgname=$(echo $pkg| cut -d . -f 1)
 		mkdir -p $pkgdir
-		tar xzvf $pkg -C / | tee > $pkgdir/$pkgname
+		tar xzvf $pkg -C $root | tee > $pkgdir/$pkgname
 	else
 		echo "missing argument"
 		exit 1
@@ -23,7 +24,7 @@ case "$arg" in
 	;;
 -d)
 	if [ -f "$pkgdir/$pkg" ]; then
-		cd /
+		cd $root
 		rm -f $(cat $pkgdir/$pkg)
 		rm -f $pkgdir/$pkg
 	else
@@ -37,14 +38,15 @@ case "$arg" in
 		exit 1
 	else
 		files=$(tar tzf $pkg)
-		cd /
+		cd $root
 		ret=0
 		for a in $files ; do
+			[ -d "$a" ] && continue
 			if [ -e "$a" ]; then
-				printf "XX\t"
+				printf "XX  "
 				ret=1
 			else
-				printf "OK\t"
+				printf "OK  "
 			fi
 			echo $a
 		done

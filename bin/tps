@@ -1,0 +1,61 @@
+#!/bin/sh
+if [ -z "$1" ]; then
+	echo "Usage: tps [-idl] [arg]"
+	echo " -i targz     install package"
+	echo " -c targz     check package conflicts"
+	echo " -d pkgname   delete packagename"
+	echo " -l [pkg]     list installed packages"
+	exit 0
+fi
+pkgdir=/var/tps
+arg=$1
+pkg=$2
+case "$arg" in
+-i)
+	if [ -n "$pkg" ]; then
+		pkgname=$(echo $pkg| cut -d . -f 1)
+		mkdir -p $pkgdir
+		tar xzvf $pkg -C / | tee > $pkgdir/$pkgname
+	else
+		echo "missing argument"
+		exit 1
+	fi
+	;;
+-d)
+	if [ -f "$pkgdir/$pkg" ]; then
+		cd /
+		rm -f $(cat $pkgdir/$pkg)
+		rm -f $pkgdir/$pkg
+	else
+		echo "unknown package"
+		exit 1
+	fi
+	;;
+-c)
+	if [ -z "$pkg" ]; then
+		echo "missing argument"
+		exit 1
+	else
+		files=$(tar tzf $pkg)
+		cd /
+		ret=0
+		for a in $files ; do
+			if [ -e "$a" ]; then
+				printf "XX\t"
+				ret=1
+			else
+				printf "OK\t"
+			fi
+			echo $a
+		done
+		exit $ret
+	fi
+	;;
+-l)
+	if [ -n "$pkg" ]; then
+		cat $pkgdir/$pkg
+	else
+		cd $pkgdir ; ls | cat
+	fi
+	;;
+esac

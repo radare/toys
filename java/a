@@ -1,0 +1,11 @@
+#!/bin/sh
+while : ; do
+	[ -e "build.xml" ] && break
+	cd ..
+done
+ant $@ |
+	sed -e 's,cannot find symbol,\x1b[32mcannot find symbol\x1b[0m,g' |
+	perl -ne 'if (/\/(.*.java):(\d*)/) {
+			print "\x1b[33mvim /$1 +$2\x1b[0m\n";
+			print;
+		} else { print; }'

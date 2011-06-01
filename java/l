@@ -1,0 +1,15 @@
+#!/bin/sh
+
+grep -e public -e package | sed -e 's,^\s*,,g' |
+	# sed -e 's,public,\x1b[32mpublic\x1b[0m,g' |
+	sed -e 's,public ,,g' |
+	sed -e 's,package,\x1b[35mpackage\x1b[0m,g' |
+	sed -e 's,(,\x1b[31m(\x1b[0m,g' |
+	sed -e 's,),\x1b[31m)\x1b[0m,g' |
+	sed -e 's,void,\x1b[33mvoid\x1b[0m,g' |
+	sed -e 's,long,\x1b[33mlong\x1b[0m,g' |
+	sed -e 's,int,\x1b[33mint\x1b[0m,g' |
+	sed -e 's,boolean,\x1b[33mboolean\x1b[0m,g' |
+	sed -e 's,synchronized,\x1b[33msynchronized\x1b[0m,g' |
+	sed -e 's,class,\x1b[32mclass\x1b[0m,g' |
+	sed -e 's,{,,g'

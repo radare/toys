@@ -1,0 +1,8 @@
+#!/bin/sh
+pfx=""
+while : ; do
+	[ ! -e "../.svn" ] && break
+	cd ..
+	pfx="../$pfx"
+done
+find * | grep java$ | grep -v svn | grep $@ | awk '{print "'$pfx'"$_;}'

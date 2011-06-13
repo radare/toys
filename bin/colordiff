@@ -1,6 +1,8 @@
 #!/bin/sh
 awk '{ 
-	if (/^+(.*)$/) {
+	if (/^changeset(.*)$/) {
+		print "\x1b[33m"$_"\x1b[0m";
+	} else if (/^+(.*)$/) {
 		print "\x1b[32m"$_"\x1b[0m";
 	} else
 	if (/^-(.*)$/) {

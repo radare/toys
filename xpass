@@ -1,0 +1,11 @@
+#!/bin/sh
+xterm -title 'Enter password' -fn 10x20 -bg black -fg red -e '
+SUM="md5sum"
+CHOP="1-32"
+printf "Password: "
+stty -echo
+read pass
+stty echo
+
+printf $pass | $SUM | cut -c $CHOP | base64 | sed -e s,=,,g | xsel -i
+'

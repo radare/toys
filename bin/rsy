@@ -1,0 +1,141 @@
+#!/bin/sh
+# rsyncd helper
+CHROOT="use chroot = no"
+DAEMON=0
+PORT=4444
+MAX=10
+MOTD=""
+AUTH=""
+AUTH2=""
+[ -z "${TMPDIR}" ] && TMPDIR=/tmp
+MODE="" # read, write
+
+ROOT=${PWD}
+
+showhelp() {
+	echo "Usage: rsy [options ..] [path]"
+	echo " simplified rsync wrapper interface"
+	echo "   -d           daemon mode"
+	echo "   -l           list all running rsyncds"
+	echo "   -k           kill all running rsyncs"
+	echo "   -r           read only (default mode)"
+	echo "   -w           write only"
+	echo "   -rw          read+write"
+	echo "   -c           use chroot"
+	echo "   -g URL       get rsync remote dir on current path"
+	echo "   -m MOTD      path to motd file"
+	echo "   -u MAXUSERS  max clients (default is ${MAX})"
+	echo "   -p PORT      specify listen port (default is ${PORT})"
+	echo "   -a AUTHFILE  specify user:pass auth file"
+	exit 0
+}
+
+parseargs() {
+	while [ -n "$1" ] ; do
+		case "$1" in
+		-l)
+			cd ${TMPDIR}
+			[ -n "`ls rsyncd.pid.* 2>/dev/null`" ] && \
+				cat rsyncd.pid.*
+			exit 0
+			;;
+		-d)
+			DAEMON=1
+			;;
+		-g)
+			shift
+			exec rsync -avz $1 .
+			;;
+		-c)
+			CHROOT="use chroot = yes"
+			;;
+		-m)
+			shift
+			MOTD="motd file = $1"
+			;;
+		-u)
+			shift
+			MAX=$1
+			;;
+		-a)
+			shift
+			AUTH="secrets file = $1"
+			users=$(echo `cut -d : -f 1 $1`)
+			AUTH2="auth users = $users"
+			;;
+		-r)
+			MODE="read only = yes"
+			;;
+		-w)
+			MODE="read only = no
+write only = yes"
+			;;
+		-rw)
+			MODE="read only = no" #write only = yes"
+			;;
+		-h)
+			showhelp
+			;;
+		-p)
+			shift
+			PORT=$1
+			;;
+		-k)
+			PIDS=`$0 -l`
+			[ -n "${PIDS}" ] && kill -INT $PIDS
+			;;
+		-*)
+			echo "Invalid option $1"
+			exit 1
+			;;
+		*)
+			ROOT=$1
+			;;
+		esac
+		shift
+	done
+}
+
+createconfig() {
+	CFG=$(mktemp ${TMPDIR}/rsyncd.conf.XXXXXX)
+	PIDFILE=$(printf ${CFG} |sed -e s,conf,pid,)
+	LOCKFILE=$(printf ${CFG} |sed -e s,conf,lock,)
+	# uid = nobody
+	# gid = nobody
+	cat > ${CFG} << EOF
+$CHROOT
+max connections = ${MAX}
+${MOTD}
+pid file = ${PIDFILE}
+lock file = ${LOCKFILE}
+timeout = 300
+$AUTH
+refuse options = c delete
+$MODE
+compress
+[b]
+	path = $ROOT
+	comment = exported directory
+	strict modes = false
+	$AUTH2
+EOF
+}
+
+oops() {
+	rm -f ${CFG} ${PIDFILE}
+	echo "Oops"
+	exit 1
+}
+
+parseargs $@
+createconfig
+cat $CFG
+if [  "${DAEMON}" = 1 ]; then
+	( rsync --daemon --port ${PORT} --config ${CFG} --no-detach || oops 
+	rm -f ${CFG} ${PIDFILE}
+	) &
+else
+	rsync --daemon --port ${PORT} --config ${CFG} --no-detach || oops
+	rm -f ${CFG} ${PIDFILE}
+fi
+exit 0

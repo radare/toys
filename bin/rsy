@@ -1,12 +1,23 @@
 #!/bin/sh
-# rsyncd helper
+# rsyncd helper -- 2011 -- pancake
+# TODO:
+# - better -T timeout flag or just remove it
+# - compression? z9
+# - strict mode
+# - chroot and uid/gid
+# - add support for --delete
+# - avoid copying hidden files
+# - batch mode for password login
 CHROOT="use chroot = no"
 DAEMON=0
+TIMEOUT=300
+HIDARG=""
 PORT=4444
 MAX=10
 MOTD=""
 AUTH=""
 AUTH2=""
+MAXSIZE=""
 [ -z "${TMPDIR}" ] && TMPDIR=/tmp
 MODE="" # read, write
 
@@ -22,7 +33,11 @@ showhelp() {
 	echo "   -w           write only"
 	echo "   -rw          read+write"
 	echo "   -c           use chroot"
+#	echo "   -H           avoid copy of hidden files"
+	echo "   -T TIMEOUT   set timeout"
+	echo "   -S MAXSIZE   maximum file size"
 	echo "   -g URL       get rsync remote dir on current path"
+	echo "   -p URL [F..] put contents of current dir to remote rsync"
 	echo "   -m MOTD      path to motd file"
 	echo "   -u MAXUSERS  max clients (default is ${MAX})"
 	echo "   -p PORT      specify listen port (default is ${PORT})"
@@ -44,7 +59,37 @@ parseargs() {
 			;;
 		-g)
 			shift
-			exec rsync -avz $1 .
+			url=$1
+			if [ -z "$1" ]; then
+				if [ -f ".rsy" ]; then
+					url=$(cat .rsy)
+				else
+					echo "Usage: rsy -g url"
+					echo "echo url > .rsy"
+					exit 1
+				fi
+			fi
+			exec rsync ${HIDARG} -avzh $url .
+			;;
+		-p)
+			shift
+			url=$1
+			if [ -z "$1" ]; then
+				if [ -f ".rsy" ]; then
+					url=$(cat .rsy)
+				else
+					echo "Usage: rsy -p url [file ..]"
+					echo "echo url > .rsy"
+					exit 1
+				fi
+			fi
+			shift
+			[ "$@" ] && a=$@ || a="./*"
+			exec rsync ${HIDARG} -avzh $a $url
+			;;
+		-S)
+			shift
+			MAXSIZE="--max-size=${1}m"
 			;;
 		-c)
 			CHROOT="use chroot = yes"
@@ -62,6 +107,10 @@ parseargs() {
 			AUTH="secrets file = $1"
 			users=$(echo `cut -d : -f 1 $1`)
 			AUTH2="auth users = $users"
+			;;
+		-H)
+			# XXX. doesnt works
+			HIDARG="--exclude='\..*'"
 			;;
 		-r)
 			MODE="read only = yes"
@@ -108,7 +157,7 @@ max connections = ${MAX}
 ${MOTD}
 pid file = ${PIDFILE}
 lock file = ${LOCKFILE}
-timeout = 300
+timeout = ${TIMEOUT}
 $AUTH
 refuse options = c delete
 $MODE
@@ -129,13 +178,15 @@ oops() {
 
 parseargs $@
 createconfig
-cat $CFG
+#cat $CFG
 if [  "${DAEMON}" = 1 ]; then
-	( rsync --daemon --port ${PORT} --config ${CFG} --no-detach || oops 
+	( rsync --daemon ${MAXSIZE} --port ${PORT} \
+		--config ${CFG} --no-detach || oops 
 	rm -f ${CFG} ${PIDFILE}
 	) &
 else
-	rsync --daemon --port ${PORT} --config ${CFG} --no-detach || oops
+	rsync --daemon ${MAXSIZE} --port ${PORT} \
+		--config ${CFG} --no-detach || oops
 	rm -f ${CFG} ${PIDFILE}
 fi
 exit 0

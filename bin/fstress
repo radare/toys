@@ -1,0 +1,106 @@
+#!/bin/sh
+# filesystem stress tool
+
+# configuration
+SMALLS=1024
+BIGS=32
+DDSIZE=200 # in MB
+NDIRS=3
+NDIRDEPTH=2
+NFILES=10
+#MINSZ=1 # in KB
+#MAXSZ=4096
+
+# ----------- #
+
+if [ -z "$1" ]; then
+	echo "Usage: fstress [path] | tee logfile"
+	exit 1
+fi
+
+D=$1
+[ ! -e "$D" ] && mkdir -p "$D"
+if [ ! -d "$D" ]; then
+	echo "not a directory"
+	exit 1
+fi
+# TODO: test if writable
+seq=seq
+gseq --help > /dev/null 2>&1
+[ $? = 0 ] && seq=gseq
+
+test_dd() {
+	echo "Stressing with a dd of ${DDSIZE}MB..."
+	dd count=${DDSIZE} bs=1M if=/dev/urandom of=${D}/fstress.dd 2>&1
+	rm -f ${D}/fstress.dd
+}
+
+test_small() {
+	echo "Stressing with ${SMALLS} small files..."
+	d=${D}/fstress.small
+	mkdir -p $d
+	for a in `$seq 0 ${SMALLS}` ; do
+		dd if=/dev/zero of=`mktemp $d/small.XXXXXX` count=1 bs=512 >/dev/null 2>&1
+	done
+	rm -rf $d
+}
+
+test_big() {
+	echo "Stressing with ${BIGS} small files..."
+	d=${D}/fstress.big
+	mkdir -p $d
+	for a in `$seq 0 ${BIGS}` ; do
+		dd if=/dev/zero of=`mktemp $d/big.XXXXXX` count=1 bs=32m >/dev/null 2>&1
+	done
+	rm -rf $d
+}
+
+test_file() {
+	d=$1
+	SZ=$2
+	#local SZ
+	#SZ=$(($MAXSZ-$MINSZ))
+	#SZ=$(($RANDOM*$SZ/32767))
+	#SZ=$(($MINSZ+$SZ))
+	printf "${SZ} "
+	dd count=1 bs=${SZ}k if=/dev/urandom of=`mktemp $d/file.XXXXXX` >/dev/null 2>&1
+}
+
+test_ndirs_r() {
+	local D
+	local n
+	D=$1
+	n=$2
+	[ "$n" = 0 ] && return
+	echo $D
+	sz=1
+	for a in `$seq 0 ${NFILES}` ; do
+		sz=$(($sz*2))
+		test_file $D $sz
+	done
+	echo
+	for a in `$seq 0 ${NDIRS}` ; do
+		test_ndirs_r `mktemp -d ${D}/dir.XXXXXX` $(($n-1))
+	done
+}
+
+test_ndirs() {
+	echo "Stressing directory and files..."
+	d=${D}/fstress.dir
+	mkdir -p ${d}
+	test_ndirs_r $d ${NDIRDEPTH}
+	rm -rf ${D}/fstress.dir
+}
+
+run() {
+	echo "[>>] $1"
+	date
+	time $1
+	date
+	echo
+}
+
+run test_dd
+run test_ndirs
+run test_small
+run test_big

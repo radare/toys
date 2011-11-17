@@ -11,6 +11,46 @@ q() {
 }
 
 case "$1" in
+u|users)
+	for a in $(sh $0 ls) ; do
+		echo "=> $a"
+		q "select value from store where key='pad:$a';" | \
+			sed -e 's,\[",\n,g' -e 's,},\n,g' | grep -e '^author' | \
+			cut -d '"' -f 3
+	done
+	;;
+clean-users)
+	used=$(
+	for a in $(sh $0 ls) ; do
+		q "select value from store where key='pad:$a';" | \
+			sed -e 's,\[",\n,g' -e 's,},\n,g' | grep -e '^author' | \
+			cut -d '"' -f 3
+	done | sort | uniq)
+	echo "==== users ===="
+	q "select * from store where key like '%uthor:%';" | cut -d : -f 2- | sed -e 's,|, -> ,'
+	all=$(q "select key from store where key like 'globalAuthor:%';" | cut -d : -f 2)
+	for a in $all ; do
+		f=0
+		for b in $used ; do
+			if [ "$a" = "$b" ]; then
+				f=1
+				break
+			fi
+		done
+		if [ $f = 0 ]; then
+			sh $0 rmuser $a
+		fi
+	done
+	;;
+rmuser)
+	if [ -n "$2" ]; then
+		q "delete from store where value = '\"$2\"';"
+		q "delete from store where key = 'globalAuthor:$2';"
+		echo "user $2 removed"
+	else
+		echo "Usage: $0 rmuser [userid]"
+	fi
+	;;
 start)
 	if (sh $0 check > /dev/null); then
 		echo already running
@@ -91,6 +131,10 @@ clean)
 
 	printf " + remove empty pads: "
 	q "select count(key) from store where value like '%Welcome to Etherpad Lite%';"
+	p=$(q "select key from store where value like '%Welcome to Etherpad Lite%';" | cut -d : -f 2)
+	for a in $p ; do
+		q "delete from store where key = 'pad2readonly:$a';"
+	done
 	q "delete from store where value like '%Welcome to Etherpad Lite%';"
 	[ $r = 0 ] && sh $0 start
 	# we cant remove the author information
@@ -104,6 +148,9 @@ clean)
 	echo "   revs [pad]  list revisions of given pad"
 	echo "   cat [pad]   show contents of pad"
 	echo "   rm [pad]    remove pad by name"
+	echo "   rmuser [id] remove specific user"
+	echo "   users       list all users used in pads"
 	echo "   clean       remove all revisions, author and chats"
+	echo "   clean-users remove all lost users # TODO: merge into clean"
 	;;
 esac

@@ -5,12 +5,28 @@
 
 DB=var/dirty.sqlite
 LOG=var/log.txt
+K=var/.run
 
 q() {
+#	echo "$@" >/dev/stderr
 	echo "$@" | sqlite3 ${DB}
 }
 
+
 case "$1" in
+reset)
+	a=$2
+	if [ -z "$a" ]; then
+		echo "Usage: $0 reset [padname]"
+		exit 1
+	fi
+	o=`q "select value from store where key='pad:$a';" | sed -e 's/"nextNum":/\n"nextNum":/' | grep -e '^"nextNum'`
+	n=`echo $o|perl -ne 's/(Num|head)":\d+/$1":0/g;s/Head":\d+/Head":-1/g;print'`
+
+	echo $o
+	echo $n
+	#q "update store set value = replace (value,'$o','$n') where key = 'pad:$a';"
+	;;
 u|users)
 	for a in $(sh $0 ls) ; do
 		echo "=> $a"
@@ -58,7 +74,11 @@ start)
 	else
 		echo "starting etherpad-lite daemon..." 
 		sed -e 's,bin/install,#bin/install,' bin/run.sh > bin/run.sh.x
-		sh bin/run.sh.x > ${LOG} &
+		touch $K
+		( while [ -f $K ] ; do 
+			sh bin/run.sh.x > ${LOG}
+			sleep 1
+		done ) &
 		sleep 2
 	fi
 	;;
@@ -69,10 +89,11 @@ run)
 stop)
 	if (sh $0 check > /dev/null); then
 		echo "stopping etherpad-lite daemon..." 
+		rm -f $K
 		pkill -INT -f "node server.js"
 		sleep 2
 	else
-		echo already running
+		echo already stopped
 		exit 1
 	fi
 	;;
@@ -135,6 +156,7 @@ clean)
 	q "select count(key) from store where value like '%Welcome to Etherpad Lite%';"
 	p=$(q "select key from store where value like '%Welcome to Etherpad Lite%';" | cut -d : -f 2)
 	for a in $p ; do
+		echo "AAAA($a))"
 		q "delete from store where key = 'pad2readonly:$a';"
 	done
 	q "delete from store where value like '%Welcome to Etherpad Lite%';"
@@ -142,8 +164,6 @@ clean)
 	printf "db size: "
 	du -hs ${DB} | awk '{print $1}'
 	[ $r = 0 ] && sh $0 start
-	# we cant remove the author information
-	#q "delete from store where key like '%uthor:%';"
 	;;
 *)
 	echo "Usage: $0 [cmd] [arg]"

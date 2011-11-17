@@ -26,8 +26,8 @@ clean-users)
 			sed -e 's,\[",\n,g' -e 's,},\n,g' | grep -e '^author' | \
 			cut -d '"' -f 3
 	done | sort | uniq)
-	echo "==== users ===="
-	q "select * from store where key like '%uthor:%';" | cut -d : -f 2- | sed -e 's,|, -> ,'
+	#echo "==== users ===="
+	#q "select * from store where key like '%uthor:%';" | cut -d : -f 2- | sed -e 's,|, -> ,'
 	all=$(q "select key from store where key like 'globalAuthor:%';" | cut -d : -f 2)
 	for a in $all ; do
 		f=0
@@ -46,7 +46,7 @@ rmuser)
 	if [ -n "$2" ]; then
 		q "delete from store where value = '\"$2\"';"
 		q "delete from store where key = 'globalAuthor:$2';"
-		echo "user $2 removed"
+		echo " + remove lost user $2"
 	else
 		echo "Usage: $0 rmuser [userid]"
 	fi
@@ -56,7 +56,7 @@ start)
 		echo already running
 		exit 1
 	else
-		echo starting...
+		echo "starting etherpad-lite daemon..." 
 		sed -e 's,bin/install,#bin/install,' bin/run.sh > bin/run.sh.x
 		sh bin/run.sh.x > ${LOG} &
 		sleep 2
@@ -68,7 +68,7 @@ run)
 	;;
 stop)
 	if (sh $0 check > /dev/null); then
-		echo stopping...
+		echo "stopping etherpad-lite daemon..." 
 		pkill -INT -f "node server.js"
 		sleep 2
 	else
@@ -121,6 +121,8 @@ clean)
 	sh $0 check >/dev/null
 	r=$?
 	[ $r = 0 ] && sh $0 stop
+	printf "db size: "
+	du -hs ${DB} | awk '{print $1}'
 	printf " + removed pad revisions: "
 	q "select count(key) from store where key like 'pad:%:revs:%';"
 	q "delete from store where key like 'pad:%:revs:%';"
@@ -136,6 +138,9 @@ clean)
 		q "delete from store where key = 'pad2readonly:$a';"
 	done
 	q "delete from store where value like '%Welcome to Etherpad Lite%';"
+	sh $0 clean-users
+	printf "db size: "
+	du -hs ${DB} | awk '{print $1}'
 	[ $r = 0 ] && sh $0 start
 	# we cant remove the author information
 	#q "delete from store where key like '%uthor:%';"

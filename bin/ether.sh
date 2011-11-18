@@ -162,6 +162,9 @@ clean)
 	q "delete from store where value like '%Welcome to Etherpad Lite%';"
 	sh $0 clean-users
 	printf "db size: "
+	q ".dump store" | sqlite3 ${DB}.new
+	mv ${DB} ${DB}.old
+	mv ${DB}.new ${DB}
 	du -hs ${DB} | awk '{print $1}'
 	[ $r = 0 ] && sh $0 start
 	;;

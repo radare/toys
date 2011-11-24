@@ -1,0 +1,31 @@
+#!/bin/sh
+# Scan for hosts in lan, find opened ports
+# nmap -p 60022 192.168.1.* | awk 'BEGIN{RS="\n\n";FS="\n"}/report/{if ($0 ~ /open/) { gsub(/^.*for /,"",$1);print $1}}'
+ip=""
+g="|grep -v Status"
+case "$1" in
+-h)
+	echo "Usage: ips [ping|port|ip]"
+	exit 0
+	;;
+ping|"")
+	p="$p -sP"
+	ip="$2"
+	g="| sed -e 's,Status: .*,,'"
+	;;
+*)
+	q="|grep open"
+	if [ -n "`echo $1|grep '\.'`" ]; then
+		ip="$1"
+		p="$p $1"
+		g=""
+	else
+		p="$p -p $1"
+	fi
+	;;
+esac
+[ "`id -u`" = 0 ] && p="$p -O"
+[ -z "$ip" ] && ip=$(route -n |tail -n 1|awk '{print $1}' | sed -e 's,\.0$,.*,g')
+eval nmap $p -oG - $ip $q $g | \
+	sed -e 's,Host: ,,' -e 's,Ports: ,,' -e 's,Seq Index.*,,g' \
+	-e 's,Ignored.*,,g' -e 's,(),,g' -e 'sx/[^,]*xxg' | grep -v '^#'

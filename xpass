@@ -1,11 +1,16 @@
 #!/bin/sh
 xterm -title 'Enter password' -fn 10x20 -bg black -fg red -e '
+SEED=""
 SUM="md5sum"
-CHOP="1-32"
+CHOP="1-8"
 printf "Password: "
 stty -echo
 read pass
 stty echo
 
-printf $pass | $SUM | cut -c $CHOP | base64 | sed -e s,=,,g | xsel -i
+HASH=$(printf -- "$SEED$pass" | $SUM)
+PASS=$(echo 0 ${HASH} | xxd -r | base64)
+# filter confusing chars #
+PASS=$(echo ${PASS} | tr '=Il10O' 'llllll' | sed -e 's,l,,g')
+echo ${PASS} | cut -c ${CHOP} | xsel -i
 '

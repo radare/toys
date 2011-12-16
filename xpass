@@ -8,7 +8,7 @@ stty -echo
 read pass
 stty echo
 
-HASH=$(printf -- "$SALT$pass" | $SUM)
+HASH=$(printf -- "$SALT$pass" | $SUM |awk '{print $1}')
 PASS=$(echo 0 ${HASH} | xxd -r | base64)
 # filter confusing chars #
 PASS=$(echo ${PASS} | tr '=Il10O' 'llllll' | sed -e 's,l,,g')

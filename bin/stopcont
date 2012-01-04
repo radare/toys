@@ -12,8 +12,8 @@ else
 	S2=$S
 fi
 while : ; do
-	kill -STOP ${P}
+	kill -STOP ${P} || exit 0
 	sleep ${S}
-	kill -CONT ${P}
+	kill -CONT ${P} || exit 0
 	sleep ${S2}
 done

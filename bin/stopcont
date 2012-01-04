@@ -1,0 +1,19 @@
+#!/bin/sh
+if [ -z "$2" ]; then
+	echo "Usage: stopcont pid stopsecs [contsecs]"
+	exit 1
+fi
+
+P=$1
+S=$2
+if [ -n "$3" ]; then
+	S2=$3
+else
+	S2=$S
+fi
+while : ; do
+	kill -STOP ${P}
+	sleep ${S}
+	kill -CONT ${P}
+	sleep ${S2}
+done

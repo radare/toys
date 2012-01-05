@@ -8,7 +8,7 @@ fi
 if [ -z "${TYPE}" ]; then
 	curl -s www.di.fm | grep pls | cut -d '"' -f 2| cut -d / -f 5 | sed -e s,.pls,, |sort | uniq
 else
-	BASE_URL=$(curl -s www.di.fm | grep blue_96|head -n 1|cut -d '"' -f 2|cut -d / -f -4)
+	BASE_URL=$(curl -s www.di.fm | grep 96.blue|head -n 1|cut -d '"' -f 2|cut -d / -f -4)
 	#URL=http://listen.di.fm/public3/${TYPE}.pls
 	URL=${BASE_URL}/${TYPE}.pls
 	STREAM=$(curl -s ${URL} | grep File1 |cut -d = -f 2)

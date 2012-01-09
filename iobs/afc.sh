@@ -9,7 +9,7 @@ disable|0|off)
 	if [ -e /usr/libexec/afcd ]; then
 		mv /usr/libexec/afcd /usr/libexec/afcd.disabled
 	fi
-	killall afcd
+	killall afcd 2>/dev/null
 	;;
 -h|help|?)
 	echo "Usage: afc.sh [off|on|status]"

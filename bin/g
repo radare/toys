@@ -1,0 +1,131 @@
+#!/bin/sh
+# easy gpg frontend
+# -----------------
+# pancake <pancake@nopcode.org>
+#
+# TODO: add support for keys in files ~/.g/key
+#  echo thisismypassphrase|gpg --batch --passphrase-fd 0 --decrypt-files *.gpg
+#
+#" vim integration
+# map <C-E> :%!g -e
+# map <C-D> :%!g -d<cr>
+# map <C-S> :%!g -c<cr>
+
+gpg=gpg
+case "$1" in
+''|-h)
+	echo "Usage: g [-opt] [arg]"
+	echo " -g         gen private and public key"
+	echo " -l         list public keys (to encrypt)"
+	echo " -l [key]   show key (same as -E)"
+	echo " -s         list secret keys (to decrypt)"
+	echo " -s [key]   show private key" # Same as -E?
+	echo " -e [user]  encrypt for user"
+	echo " -c         encrypt using simmetric key"
+	echo " -d         decrypt"
+	echo " -D [key]   delete key"
+	echo " -E [key]   export key"
+	echo " -S [key]   export secret keys"
+	echo " -I [file]  import key"
+	;;
+-d)
+	$gpg -d $2 2>/dev/null
+	;;
+-c)
+	$gpg -a -c
+	;;
+-g)
+	$gpg --gen-key
+	;;
+-I)
+	$gpg --import $2
+	;;
+-S)
+	$gpg -a --export-secret-keys $2
+	;;
+-E)
+	if [ -z "$2" ]; then
+		echo "Usage: g -E userkey"
+		exit 1
+	fi
+	$gpg -a --export $2
+	;;
+-D)
+	if [ -z "$2" ]; then
+		echo "Usage: g -D userkey"
+		exit 1
+	fi
+	a=`$0 -s | grep $2 |cut -d ' ' -f 1`
+	if [ -n "$a" ]; then
+		$gpg --delete-secret-key $2
+		if [ $? = 0 ]; then
+			echo "secret (private) key deleted"
+		else
+			exit 1
+		fi
+	fi
+	a=`$0 -l | grep $2 |cut -d ' ' -f 1`
+	if [ -n "$a" ]; then
+		$gpg --delete-key $2
+		[ $? = 0 ] && echo "public key deleted"
+	fi
+	;;
+-s)
+	if [ -n "$2" ]; then
+		$gpg -a --export-secret-subkeys $2
+		exit 0
+	fi
+	c=0
+	export c
+	$gpg --list-secret-keys | grep -e ^ssb -e ^uid | awk '{print $2}' | \
+		while : ; do
+			read A
+			[ -z "$A" ] && break
+			if [ $c = 0 ]; then
+				uid="`echo $A |cut -d / -f 2`"
+				c=1
+			else
+				ssb="$A"
+				c=0
+				echo "$ssb $uid"
+			fi
+		done
+	;;
+-e)
+	if [ -z "$2" ]; then
+		echo "Usage: g -e [key]"
+		exit 1
+	fi
+	$gpg -z 9 -a -r $2 -e $3 2>/dev/null
+	;;
+-L)
+	$gpg --list-keys| grep -e pub -e uid|sed -e 's,uid\ *,      ,g'
+	;;
+-l)
+	if [ -n "$2" ]; then
+		$gpg -a --export $2
+		exit 0
+	fi
+	c=0
+	export c
+	$gpg --list-keys | grep -e pub -e uid | \
+		awk '{print $2}' | \
+		grep -v '^$' | \
+		while : ; do
+			read A 
+			[ -z "$A" ] && break
+			case $c in
+			0) pub=$A ; ;;
+			1) uid=$A
+				echo "$pub $uid" |cut -d / -f 2-
+				c=-1
+				;;
+			esac
+			c=$(($c+1))
+			
+		done
+	;;
+*)
+	echo "Unknown option $1"
+	exit 1
+esac

@@ -18,6 +18,7 @@ case "$1" in
 	echo " -g         gen private and public key"
 	echo " -l         list public keys (to encrypt)"
 	echo " -l [key]   show key (same as -E)"
+	echo " -L         list keys in verbose"
 	echo " -s         list secret keys (to decrypt)"
 	echo " -s [key]   show private key" # Same as -E?
 	echo " -e [user]  encrypt for user"
@@ -27,6 +28,7 @@ case "$1" in
 	echo " -E [key]   export key"
 	echo " -S [key]   export secret keys"
 	echo " -I [file]  import key"
+	echo " -o, -O     filter for oneliner to multiline"
 	;;
 -d)
 	$gpg -d $2 2>/dev/null
@@ -96,7 +98,24 @@ case "$1" in
 		echo "Usage: g -e [key]"
 		exit 1
 	fi
-	$gpg -z 9 -a -r $2 -e $3 2>/dev/null
+	$gpg -z 9 -a -r $2 -e $3 2>/dev/null | grep -v ^Version:
+	;;
+-o)
+	grep -v Version: | grep -v "PGP MESSAGE" | tr '\n' ' ' | sed -e 's, ,,g'
+	;;
+-O)
+	echo "-----BEGIN PGP MESSAGE-----"
+	while : ; do
+		read A
+		[ -z "$A" ] && break
+		while : ; do
+			[ -z "$A" ] && break
+			B=$(echo $A|cut -c 1-64)
+			A=$(echo $A|cut -c 64-)
+			echo "$B"
+		done
+	done
+	echo "-----END PGP MESSAGE-----"
 	;;
 -L)
 	$gpg --list-keys| grep -e pub -e uid|sed -e 's,uid\ *,      ,g'

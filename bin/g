@@ -82,10 +82,10 @@ case "$1" in
 			read A
 			[ -z "$A" ] && break
 			if [ $c = 0 ]; then
-				uid="`echo $A |cut -d / -f 2`"
+				uid="$A"
 				c=1
 			else
-				ssb="$A"
+				ssb="`echo $A |cut -d / -f 2`"
 				c=0
 				echo "$ssb $uid"
 			fi

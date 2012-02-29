@@ -111,8 +111,17 @@ case "$1" in
 		while : ; do
 			[ -z "$A" ] && break
 			B=$(echo $A|cut -c 1-64)
-			A=$(echo $A|cut -c 64-)
-			echo "$B"
+			A=$(echo $A|cut -c 65-)
+			if [ -z "$A" ]; then
+				L=$(printf "$B"|wc -c)
+				OP=$(($L-4))
+				O=$(echo "$B"|cut -c 1-$OP)
+				O2=$(echo "$B"|cut -c $OP-)
+				echo "$O"
+				echo "$O2"
+			else
+				echo "$B"
+			fi
 		done
 	done
 	echo "-----END PGP MESSAGE-----"

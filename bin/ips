@@ -25,7 +25,13 @@ ping|"")
 	;;
 esac
 [ "`id -u`" = 0 ] && p="$p -O"
-[ -z "$ip" ] && ip=$(route -n |tail -n 1|awk '{print $1}' | sed -e 's,\.0$,.*,g')
+if [ -z "$ip" ]; then
+	if [ `uname` = Darwin ]; then
+		ip=$(netstat -rn| grep 127.0.0.1|tail -n1|awk '{print $1}'| sed -e 's,\.0$,.*,g')
+	else
+		ip=$(route -n |tail -n 1|awk '{print $1}' | sed -e 's,\.0$,.*,g')
+	fi
+fi
 eval nmap $p -oG - $ip $q $g | \
 	sed -e 's,Host: ,,' -e 's,Ports: ,,' -e 's,Seq Index.*,,g' \
 	-e 's,Ignored.*,,g' -e 's,(),,g' -e 'sx/[^,]*xxg' | grep -v '^#'

@@ -1,0 +1,35 @@
+#!/bin/sh
+#
+# use this script instead of iOS's g++
+#
+#=installation=
+# cd /usr/bin
+# mv g++ g++.orig
+# mv g++.fix g++
+
+ARGS="-I/usr/include/c++/4.2.1"
+SKIP=0
+echo ===
+echo g++ $@
+unset MACOSX_DEPLOYMENT_TARGET
+echo ===
+for a in $@ ; do
+        case "$a" in
+        -mmacosx-version-min=*)
+                ;;
+        -current*|-compatibility*|-arch|-mmacosx-version-min)
+                SKIP=1
+                ;;
+        *)
+                if [ "$SKIP" = 1 ]; then
+                        SKIP=0
+                else
+                        ARGS="${ARGS} $a"
+                fi
+                ;;
+        esac
+done
+echo ===
+echo g++.orig $ARGS
+echo ===
+g++.orig $ARGS

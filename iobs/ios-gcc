@@ -1,0 +1,6 @@
+#!/bin/sh
+SDKROOT=/Developer/Platforms/iPhoneOS.platform/Developer/
+SYSROOT=${SDKROOT}/SDKs/iPhoneOS4.1.sdk
+FLAGS="-arch armv6 -mthumb "
+
+${SDKROOT}/usr/llvm-gcc-4.2/bin/arm-apple-darwin10-llvm-gcc-4.2 -isysroot ${SYSROOT} $@

@@ -1,0 +1,1012 @@
+<head>
+
+<link rel="stylesheet" href="css.css" type="text/css" />
+
+<script type="text/javascript" src="rsa2_files/jsbn.js" ></script>
+<script type="text/javascript" src="rsa2_files/sha1.js" ></script>
+<script type="text/javascript" src="rsa2_files/base64.js" ></script>
+<script type="text/javascript" src="rsa2_files/prng4.js"></script>
+<script type="text/javascript" src="rsa2_files/rng.js"></script>
+<script type="text/javascript" src="rsa2_files/rsa.js"></script>
+<script type="text/javascript" src="rsa2_files/rsa2.js"></script>
+
+<script type="text/javascript">
+
+/*
+
+Ignore the following instructions unless you've worked some way around it.  The installation
+of Tor's firefox browser I am using does not seem to allow json requests outside of the domain.
+
+If you just want to edit the html/javascript, uncomment this line:
+//SERVER_NAME="http://jk43lztczbrel2lp.onion/"
+and save files to disk.  Substitute another server if this one is not working.
+
+most of the client stuff will be done here, anyway.  this is where
+the client can see things are verified, and contains the bulk of the encryption
+and verification code.
+
+*/
+
+SERVER_NAME="" // default, just load json from server hosting the html
+//SERVER_NAME="http://127.0.0.1:8124" // localhost
+//SERVER_NAME="http://jk43lztczbrel2lp.onion" //server I am running.
+
+// From mozilla developer network
+docCookies = {  
+  getItem: function (sKey) {  
+    if (!sKey || !this.hasItem(sKey)) { return null; }  
+    return unescape(document.cookie.replace(new RegExp("(?:^|.*;\\s*)" + escape(sKey).replace(/[\-\.\+\*]/g, "\\$&") + "\\s*\\=\\s*((?:[^;](?!;))*[^;]?).*"), "$1"));  
+  },  
+  /** 
+  * docCookies.setItem(sKey, sValue, vEnd, sPath, sDomain, bSecure) 
+  * 
+  * @argument sKey (String): the name of the cookie; 
+  * @argument sValue (String): the value of the cookie; 
+  * @optional argument vEnd (Number, String, Date Object or null): the max-age in seconds (e.g., 31536e3 for a year) or the 
+  *  expires date in GMTString format or in Date Object format; if not specified it will expire at the end of session;  
+  * @optional argument sPath (String or null): e.g., "/", "/mydir"; if not specified, defaults to the current path of the current document location; 
+  * @optional argument sDomain (String or null): e.g., "example.com", ".example.com" (includes all subdomains) or "subdomain.example.com"; if not 
+  * specified, defaults to the host portion of the current document location; 
+  * @optional argument bSecure (Boolean or null): cookie will be transmitted only over secure protocol as https; 
+  * @return undefined; 
+  **/  
+  setItem: function (sKey, sValue, vEnd, sPath, sDomain, bSecure) {  
+    if (!sKey || /^(?:expires|max\-age|path|domain|secure)$/.test(sKey)) { return; }  
+    var sExpires = "";  
+    if (vEnd) {  
+      switch (typeof vEnd) {  
+        case "number": sExpires = "; max-age=" + vEnd; break;  
+        case "string": sExpires = "; expires=" + vEnd; break;  
+        case "object": if (vEnd.hasOwnProperty("toGMTString")) { sExpires = "; expires=" + vEnd.toGMTString(); } break;  
+      }  
+    }  
+    document.cookie = escape(sKey) + "=" + escape(sValue) + sExpires + (sDomain ? "; domain=" + sDomain : "") + (sPath ? "; path=" + sPath : "") + (bSecure ? "; secure" : "");  
+  },  
+  removeItem: function (sKey) {  
+    if (!sKey || !this.hasItem(sKey)) { return; }  
+    var oExpDate = new Date();  
+    oExpDate.setDate(oExpDate.getDate() - 1);  
+    document.cookie = escape(sKey) + "=; expires=" + oExpDate.toGMTString() + "; path=/";  
+  },  
+  hasItem: function (sKey) { return (new RegExp("(?:^|;\\s*)" + escape(sKey).replace(/[\-\.\+\*]/g, "\\$&") + "\\s*\\=")).test(document.cookie); }  
+};  
+
+
+function Log(msg) {
+    t=document.createTextNode(msg);
+    t.innerHTML=msg
+    //t=document.createTextNode(msg); 
+    var logdiv=document.getElementById("log")
+    logdiv.appendChild(t)
+    logdiv.appendChild(document.createElement("br"))
+    logdiv.scrollTop = logdiv.scrollHeight; 
+}
+function LogHTML(msg) {
+    var logdiv=document.getElementById("log")
+    logdiv.appendChild(msg)
+    //logdiv.appendChild(document.createElement("br"))
+    logdiv.scrollTop = logdiv.scrollHeight; 
+}
+function LogJSON(d) {
+    LogHTML(JSONToHtml(d))
+}
+
+function IsSafari() {
+    return window.getComputedStyle && !window.globalStorage && !window.opera;
+}
+
+var KEY2
+
+function subel(el,type) {
+    var n=document.createElement(type)
+    el.appendChild(n);
+    return n;
+}
+
+function JSONToHtml(k) {
+    if(typeof k=="object") {
+        var table=document.createElement("table")
+        table.style="border:1px solid black;"
+        table.className="mytable"
+        for (i in k) {
+            var row=subel(table,"tr")
+            var col1=subel(row,"td")
+            col1.innerHTML=i
+            var col2=subel(row,"td")
+            col2.appendChild(JSONToHtml(k[i]))
+            //col2.innerHTML=k[i]
+        }
+
+        return table;
+    } else {
+        var ret=document.createElement("text");
+        ret.innerHTML=k
+        return ret;
+        //return document.createTextNode(k);
+    }
+}
+
+function Post(msg) {
+    //if(!KEY2
+    var stringmsg=JSON.stringify(msg);
+    var signature=KEY2.SignMessage(stringmsg);
+    var entry={
+        pubkey:KEY2.PublicPartsJSON(),//{e:KEY2.e,n:KEY2.n},//document.getElementById("myname").value,//IsSafari()?"safari":"user",
+        message:msg,
+        signature:signature,// sha1(JSON.stringify(msg)),
+        proof:ProoveWork(signature),
+    }
+    MakeJSONRequest("post",entry)
+    return entry;
+}
+
+function UpdateWithSearch(search) {
+    // Give a delay to give earlier requests a chance to go through.
+    setTimeout(function() {
+        Log("Searching database:")
+        MakeJSONRequest("json",search);
+    },120)
+}
+
+function Reply(parent,comment) {
+    var msg={
+        comment:comment,
+        parent:parent,
+    }
+    var entry=Post(msg)
+    
+    UpdateWithSearch({message:{parent:parent}})
+}
+function Vote(parent,v) {
+    var msg={
+        vote:v,
+        parent:parent,
+    }
+    var entry=Post(msg)
+    
+    UpdateWithSearch({signature:entry.signature})
+}
+
+function CheckCreds(d) {
+    var verified=false
+    var prooved=false
+    if(d.pubkey.e) {
+        var key=KeyFromJSON(d.pubkey)
+        verified=key.CheckSignature(JSON.stringify(d.message),d.signature)
+        prooved=VerifyProof(d.signature,d.proof)
+    }
+    return {verified:verified,prooved:prooved}
+}
+
+function CommentToHTML(text) {
+    if(typeof(text)!="string")
+        return JSONToHtml(text)
+    var lines=[]
+    var lastlinestart=0
+    var k=0
+    while(k<text.length) {
+        if(text.substr(k,2)=="\n\n") {
+            lines.push(text.substr(lastlinestart,k-lastlinestart))
+            k+=2
+            //Log(lines.length+" "+lines[lines.length-1])
+            lastlinestart=k
+        } else {
+            k++
+        }
+    }
+    lines.push(text.substr(lastlinestart))
+    
+    
+    // for creating links to urls
+    // from http://stackoverflow.com/questions/3809401/javascript-url-regex
+    var urllinker_regex = /([-a-zA-Z0-9@:%_\+.~#?&//=]{2,256}\.[a-z]{2,10}\b(\/[-a-zA-Z0-9@:%_\+.~#?&//=]*)?)/gi;
+        
+    for(ln in lines) {
+        var l=lines[ln];
+        
+        // Italicize between *'s
+        l=l.replace(/\*([a-zA-Z ]*)\*/mg,"<i>$1</i>")
+        
+        l=l.replace(urllinker_regex,"<a href=$1>$1</a>")
+
+        lines[ln]=l
+    }
+    
+    
+
+    var ret=""
+    for (i=0;i<lines.length;i++) {
+        //Log(i)
+        var l=lines[i]
+        if(l.substr(0,2)=="* ") {
+            ret+="<ul>"
+            for(k=i;k<lines.length;k++) {
+                if(lines[k].substr(0,2)=="* ")
+                    ret+="<li>"+lines[k].substr(2)+"</li>"
+                else {
+                    break;
+                }
+            }
+            i=k-1;
+            ret+="</ul>"
+        } else {
+            ret+="<p>"+l+"</p>"
+        }
+        //Log(i)
+    }
+    //Log(ret)
+    var nret=document.createElement("div")
+    nret.innerHTML=ret
+    return nret
+}
+
+var sequential_view
+function SequentialView() {
+    sequential_view=true
+    UpdateCommentsFromDatabase(true)
+}
+function NormalView() {
+    sequential_view=false
+    UpdateCommentsFromDatabase(true)
+}
+
+var view_structs=false
+function ViewStructs() {
+    view_structs=!view_structs
+    document.getElementById("viewstructsbutton").className="pbutton "+(view_structs?"pbuttonact":"")
+    
+    UpdateCommentsFromDatabase(true)
+}
+
+
+var window_lookup={}
+var database={}
+var database_lookup={}
+
+// Updates internal database with scores, etc.
+function callback(ndatabase) {
+    page=document.getElementById("page")
+    
+    //Log("called back")
+    Log("Reply length: "+ndatabase.length)
+    
+    // add new from database
+    for(i in ndatabase) {
+        if(!database[i])
+            database[ndatabase[i].signature]=ndatabase[i];
+    }
+    {
+        var count=0;
+        for(i in database) count++
+        Log("Internal database length: "+count)
+    }
+    database_lookup={}
+    for (i in database) {
+        var d=database[i]
+        database_lookup[d.signature]=d
+        d.score=0;
+        d.votes={}
+        d.allchildren=[]
+    }
+    for (i in database) {
+        var d=database[i]
+        if(d.message&&d.message.vote) {
+            var t=database_lookup[d.message.parent];
+            t.votes[KeyToString(d.pubkey)]=d.message.vote
+        }
+        if(d.message&&d.message.parent) {
+            var t=database_lookup[d.message.parent]
+            if(t)
+                t.allchildren.push(d.signature)
+        }
+    }
+    for (i in database) {
+        var d=database[i]
+        d.score=0
+        for (k in d.votes) {
+            d.score+=d.votes[k];
+        }
+    }
+    UpdateCommentsFromDatabase(false)
+}
+
+// Updates the DOM with the database
+function UpdateCommentsFromDatabase(full_update)  {
+    if(full_update)    
+        page.innerHTML=""
+    
+    for (i in database) {
+        var d=database[i]
+        var m=d.message;
+        //LogHTML(JSONToHtml(d))
+        var hascomment=m.comment||m.comment===""
+
+        if(!hascomment) {
+            //continue;
+        }
+        if(typeof(m)=="string" && m.substr(0,10)=="just check")
+            continue;
+        
+        if(!full_update&&window_lookup[d.signature]) continue;
+
+        //Log(d.pubkey+"("+m.id+")"+" says \""+m.comment+"\" "+"Parent "+m.parent)
+        var comment=document.createElement("div")
+        comment.className ="comment"
+        
+        /*if(hascomment) {
+            var votebox=document.createElement("div")
+            votebox.className="votebox"
+            comment.appendChild(votebox)
+        }*/
+        
+        var thiscomment=document.createElement("div")
+        thiscomment.className="thiscomment"
+        comment.appendChild(thiscomment)
+    
+        //barebones
+        //comment.innerHTML=d.pubkey+"("+m.id+")"+" says \""+m.comment+"\" "+"Parent "+m.parent
+        var creds=CheckCreds(d)
+        var is_me=KeyToString(KeyFromJSON(d.pubkey))==KeyToString(KEY2.PublicParts())
+
+        var username=document.createElement("a")
+        username.innerHTML="["+d.pubkey+"]"
+        if(d.pubkey.e) {
+            var diffstr=KeyFromJSON(d.pubkey).ProofDifficulty()
+            username.innerHTML="["+d.pubkey.e+"/"+d.pubkey.n.substr(0,5)+"/"+diffstr+"]"+":"+d.signature.substr(0,5)
+        }
+        //username.innerHTML=d.score+" "+username.innerHTML
+
+        
+        username.title=JSON.stringify(d,null,4)
+        username.className="username"+(is_me?" username_me":"")
+
+        var namebar=document.createElement("div")
+        namebar.className="namebar"
+        
+        
+        var score=subel(namebar,"text")
+        score.innerHTML=""
+        
+        namebar.appendChild(username)
+        
+        
+        
+        function NewFlag(text,isgood,title) {
+            var nd=document.createElement("a");
+            nd.className=(isgood?"flaggood":"flagbad")
+            nd.innerHTML=text
+            nd.title=title
+            namebar.appendChild(nd)
+        }
+        NewFlag("S",creds.verified,"Signature: "+d.signature)
+        NewFlag("P",d.proof,"Proof of work: "+d.proof+" Difficulty: "+ProofDifficulty(d.signature,d.proof))
+        
+        if(typeof(m)=="string") {
+            subel(namebar,"text").innerHTML=m
+        }
+        if(m.vote) {
+            subel(namebar,"text").innerHTML="Vote: "+m.vote
+        }
+        
+        thiscomment.appendChild(namebar)
+        
+        /*if(is_me) {
+            NewFlag("Me",creds.verified,"Key: "+KeyToString(KeyFromJSON(d.pubkey)))
+        }*/
+        if(m.chat) {
+            //subel(thiscomment,"div").innerHTML="Chat: "+m.chat
+            subel(namebar,"text").innerHTML=m.chat
+        }
+        if(view_structs) {
+            thiscomment.appendChild(CommentToHTML(m))
+        } else {
+            if(hascomment) {
+                var commentin=document.createElement("div")
+                //commentin.innerHTML=CommentToHTML(m.comment)
+                commentin.appendChild(CommentToHTML(m.comment))
+                //var commentin=document.createTextNode(m.comment)
+                commentin.className="usertext"
+                thiscomment.appendChild(commentin)
+            }
+        }
+        function NewButton(text,fn,k) {
+            var replybutton2=document.createElement("a")
+            replybutton2.innerHTML=text
+            replybutton2.className="button"
+            replybutton2.onclick=fn
+            replybutton2.href="javascript:void(0)"
+            if(!k)
+                buttons.appendChild(replybutton2)
+            else
+                k.appendChild(replybutton2)
+        }    
+        var makebuttons=hascomment
+        if(makebuttons) {
+            
+            var buttons=document.createElement("div")
+            buttons.className="buttons"
+            thiscomment.appendChild(buttons)
+            
+            
+            
+            /*NewButton("permalink",(function(comment,d) {
+                return function() {
+                    
+                }
+            })(buttons,d))    */
+            
+            NewButton("reply",
+                (function(comment,d) {
+                    return function() {
+                        var form=document.createElement("form")
+                        var rboxdiv=document.createElement("div")
+                        var rbox=document.createElement("textarea")
+                        
+                        
+                        form.className="comment"
+                        form.onsubmit=function() {
+                            Reply(d.signature,rbox.value)
+                            comment.removeChild(form)
+                            return false;
+                        }
+                        rbox.className="replybox"
+                        
+                        rboxdiv.appendChild(rbox)
+                        var submitbutton=document.createElement("button")
+                        submitbutton.innerHTML="Save"
+                        submitbutton.type="submit"  
+                        submitbutton.onclick=function() {}
+                        
+                        var cancelbutton=document.createElement("button")
+                        cancelbutton.innerHTML="Cancel"
+                        cancelbutton.type="button"  
+                        cancelbutton.onclick=function() {comment.removeChild(form)}
+                        
+                        form.appendChild(rboxdiv)
+                        form.appendChild(submitbutton)
+                        form.appendChild(cancelbutton)
+                        comment.appendChild(form)
+                        
+                        var rpreview=subel(form,"br") //document.createElement("div")
+                        var rpreview=subel(form,"div") //document.createElement("div")
+                        rpreview.className="usertext"
+                        rbox.onkeyup=function() {
+                            rpreview.innerHTML=""
+                            rpreview.appendChild(CommentToHTML(rbox.value))
+                        }
+                        
+                        rbox.focus()
+                    }
+                })(buttons,d))
+            NewButton("&#3232;_&#3232",(function(comment,d) {
+                return function() {
+                    Reply(d.signature,"&#3232;_&#3232;")
+                    return false;
+                }
+            })(buttons,d))
+            /*NewButton("generic-reply",(function(comment,d) {
+                return function() {
+                    var replies=[
+                        "I did nazi that coming.",
+                        "Checkmate, theists!",
+                        "You got to be kitten me.",
+                        "relevant xkcd",
+                        //"<img src=http://i.imgur.com/WnL8V.jpg />",
+                       ]
+                    var text=replies[Math.floor(Math.random()*replies.length)]
+                    Reply(d.signature,text)
+                    return false;
+                }
+            })(buttons,d))*/
+            
+            NewButton("like",(function(comment,d) {
+                return function() {
+                    Vote(d.signature,1)
+                    return false;
+                }
+            })(buttons,d))
+            NewButton("dislike",(function(comment,d) {
+                return function() {
+                    Vote(d.signature,-1)
+                    return false;
+                }
+            })(buttons,d))
+            //if(
+            /*NewButton("delete",(function(comment,d) {
+                return function() {
+                    Vote(d.signature,-1)
+                    return false;
+                }
+            })(buttons,d))*/
+        
+            // This is not implemented at all, besides making a single line text box.
+            var chatfn=(function(d) {
+                 return function() {
+                    var form=document.createElement("form")
+                    var rboxdiv=document.createElement("div")
+                    var rbox=document.createElement("input")
+                    rbox.type="text"
+                    form.className="comment"
+                    form.onsubmit=function() {
+                        //Reply(d.signature,{chat:true,text:rbox.value})
+                        Post({chat:rbox.value,parent:d.signature})
+                        UpdateWithSearch()
+                        //comment.removeChild(form)
+                        rbox.value=""
+                        return false;
+                    }
+                    //rbox.className="replybox"
+                    rbox.size=50
+                    rboxdiv.appendChild(rbox)
+                    var submitbutton=document.createElement("button")
+                    submitbutton.innerHTML="Save"
+                    submitbutton.type="submit"  
+                    submitbutton.onclick=function() {}
+                    
+                    var cancelbutton=document.createElement("button")
+                    cancelbutton.innerHTML="Cancel"
+                    cancelbutton.type="button"  
+                    cancelbutton.onclick=function() {form.parentNode.removeChild(form)}
+ 
+                    form.appendChild(rboxdiv)
+                    form.appendChild(submitbutton)
+                    form.appendChild(cancelbutton)
+
+                    //comment.appendChild(form)
+                    window_lookup[d.signature].ChatBoxReply().appendChild(form)
+                    rbox.focus()
+                }
+            })
+            NewButton("chat",chatfn(d))
+        }
+        var children=document.createElement("div")
+        comment.appendChild(children)
+        var thiswindow={
+            main:comment,
+            thiscomment:thiscomment,
+            children:children,
+            score:score,
+            ChatBox:function() {
+                if(!this.chatbox) {
+                    chatbox=document.createElement("div")
+                    this.main.appendChild(chatbox)
+                    chatbox.className="chatbox"
+                    //subel(chatbox,"text").innerHTML="chat"
+                    this.chatbox=chatbox
+                    
+                    this.chatboxchats=subel(this.chatbox,"div")
+                    this.chatboxreply=subel(this.chatbox,"div")
+                    NewButton("chat",chatfn(database_lookup[m.parent]),chatbox)
+                    // closures in javascript are so annoying.
+                    NewButton("refresh",function(m) { return function() {UpdateWithSearch({message:{parent:m.parent}})}}(m),chatbox)
+                }
+                return this.chatboxchats
+            },
+
+            ChatBoxReply:function() {
+                this.ChatBox();
+                return this.chatboxreply
+            },
+        }
+        window_lookup[d.signature]=thiswindow
+        var targcomment
+        if(!m.parent || !window_lookup[m.parent] || sequential_view)
+            targcomment=page
+        else  {
+            targcomment=window_lookup[m.parent].children
+        }
+        if(m.chat||m.chat==="") {
+            window_lookup[m.parent].ChatBox().appendChild(comment)
+        }
+        else {
+            targcomment.insertBefore(comment, targcomment.firstChild);
+        }
+    }
+    
+    // Update scores
+    for(i in window_lookup) {
+        window_lookup[i].score.innerHTML=database_lookup[i].score
+    }
+}
+
+DOCHEAD=document.getElementsByTagName('HEAD')[0]
+
+
+function MakeJSONRequest(request,json) {
+    Log("JSON Request: \""+request+"\", data:" )
+    LogHTML(JSONToHtml(json));
+    var str=JSON.stringify(json)
+    MakeRequest(request,str)
+    Log(str)
+}
+
+function MakeRequest(request,data) {
+    var s=document.createElement("script");
+    s.type='text/javascript'
+    s.src=SERVER_NAME+"/"+request
+    if(data) s.src=s.src+"?d="+escape(data)
+    DOCHEAD.appendChild(s)
+    Log("request: "+s.src)
+}
+
+
+
+function KeyFromParts(n,e,d,proof) {
+    return {
+        n:n,
+        e:e,
+        d:d,
+        proof:proof,
+        Swap:function() {
+            return KeyFromParts(this.n,this.d,this.e,this.proof);
+        },
+        Encrypt:function(msg) {
+            var rsa=new RSAKey()
+            rsa.setPublic(this.n, this.e, 64)
+            return rsa.encrypt(msg,64);
+        },
+        Decrypt:function(ciphertext) {
+            var rsa=new RSAKey()
+            var base=64
+            rsa.setPrivate2(this.n, this.d, 64)
+            return rsa.decrypt(ciphertext,64);
+        },
+        SignMessage:function(text) {
+            return this.Swap().Encrypt(sha1_64(text))
+        },
+        CheckSignature:function(text,signature) {
+            var sha=sha1_64(text);
+            var remotesha=this.Swap().Decrypt(signature)
+            return sha==remotesha
+        },
+        PublicPartsJSON:function() {
+            // want to do this in order e,n,proof, wihtout extra
+            var ret={e:this.e,n:this.n}
+            // DO NOT INCLUDE D
+            if (this.proof) ret.f=this.proof;
+            return ret
+        },
+        AllPartsJSON:function() {
+            // want to do this in correct order, not include extra: e,n,d,proof
+            var ret={e:this.e,n:this.n}
+            if (this.d) ret.d=this.d;
+            if (this.proof) ret.f=this.proof;
+            return ret
+        },
+        PublicParts:function() {
+            return KeyFromParts(this.n,this.e,null,this.proof)
+        },
+        ProofDifficulty:function() {
+            return ProofDifficulty(KeyToString(this.PublicParts()),this.proof)
+        },
+    }
+}
+function KeyToString(k) {
+    var ret=k.e+"/"+k.n
+    if(k.d) ret+="/"+k.d
+    return ret
+}
+
+function StringToKey(s) {
+    var idx=s.indexOf("/")
+    // E first, then N
+    var idx2=s.indexOf("/",idx+1)
+    
+    return KeyFromParts(s.substr(idx+1,idx2-idx-1),s.substr(0,idx),idx2?s.substr(idx2+1):false)
+}
+
+
+function KeyFromJSON(k) {
+    return KeyFromParts(k.n,k.e,k.d,k.f)
+}
+
+
+
+
+function sha1_64(text) {
+    return parseBigInt(sha1(text),16).toString(64).substr(0,5)
+}
+function sha1_2(text) {
+    return parseBigInt(sha1(text),16).toString(2)
+}
+
+function SignMessage(text) {
+    return do_encrypt(sha1_64(text))
+}
+function CheckSignature(text,signature) {
+    var sha=sha1_64(text);
+    var remotesha=do_decrypt(signature)
+    return sha==remotesha
+}
+
+function ProoveWork(text,difficulty,maxtries) {
+    var before = new Date();
+    difficulty=difficulty || 8
+    maxtries=maxtries||150000
+    for(i=0;i<maxtries;i++) {
+        var a=i.toString(32)
+        if(VerifyProof(text,a,difficulty)) {
+            Log("Proof found at "+a+" ("+i+")")
+			Log(sha1_2(a+text))
+            var after = new Date();
+            Log("Proof Time: " + (after - before) + "ms");
+            return a;
+        }
+    }
+    
+    return "no proof found"
+}
+function ProofDifficulty(text,proof) {
+    var sha=sha1_2(proof+text)
+    var maxlen=0
+    var curlen=0
+    for(var i=0;i<sha.length;i++) {
+        if(sha.charAt(i)!="0")
+            curlen=0
+        else
+            curlen++
+        maxlen=Math.max(curlen,maxlen)
+    }
+    return maxlen
+}
+function VerifyProof(text,proof,difficulty) {
+    return ProofDifficulty(text,proof)>=(difficulty||8);
+}
+
+function RandInt(m) {
+    return Math.floor(Math.random()*m)
+}
+function MoreProof(i) {
+    document.getElementById("proofbutton").className="pbutton pbuttonact"
+    var text=KeyToString(KEY2.PublicParts());
+    var maxdiff=KEY2.ProofDifficulty()
+    //Log("Prooving.. Difficulty: "+maxdiff)
+    var maxa=null
+    
+    for(k=0;k<200;k++) {
+        var str=""
+        
+        var plen=RandInt(20)
+        for(i=0;i<plen;i++)
+            str+=int2char(RandInt(64))
+        //Log(BI_RM.charAt(5))
+        var a=Math.floor((Math.random()*100000000)).toString(32)
+        a=str
+        //Log(str)
+        var diff=ProofDifficulty(text,a)
+        if(diff>maxdiff) {
+            Log("New proof.  difficulty="+diff+" Proof="+a)
+            Log(sha1_2(a+text))
+            maxdiff=diff;
+            maxa=a;
+            KEY2.proof=a
+            KeyToDoc()
+             
+        }
+        i++
+    }
+    setTimeout(MoreProof,10)
+}
+
+/*
+1010101011110100110001100001110111011100110001011110100010100010110110101011111011011110000011110011101101001000001011001101100110101110101010010100001101001101
+aaf4c61ddcc5e8a2dabede0f3b482cd9aea9434d
+aHQNxTsNuyySHXu3PJ8bdCKGkdd
+*/
+
+/*
+
+
+
+TODO:
+* fix chat
+* keys->string in json (for convenience really.. could also change to standard public key rep)
+* server queries.  look up unstructured db queries.
+
+*/
+
+
+
+
+function GenerateKey() {
+    var before = new Date();
+    var rsa = new RSAKey();
+    var dr = document.rsatest;
+    Log("Generating RSA Key...");
+    // NOTE: public exponent (e or "name") has to be an odd number - just add a 1 at the end to do this.
+    rsa.generate(document.getElementById("mybits").value, document.getElementById("myname").value+"1");
+
+    var after = new Date();
+    Log("Key Generation Time: " + (after - before) + "ms");
+
+    //var ret=KeyFromWuKey(rsa)
+    var ret
+    {
+        var base=64
+        ret=KeyFromParts(rsa.n.toString(base),rsa.e.toString(base),rsa.d.toString(base))
+    }
+    ret.proof=ProoveWork(KeyToString(ret.PublicParts()),10)
+    Log(KeyToString(ret.PublicParts()))
+    Log(ret.PublicParts().ProofDifficulty())
+    return ret
+}
+
+function do_genrsa1() {
+    KEY2=GenerateKey()
+    KeyToDoc()
+    //UpdateCommentsFromDatabase(true) // to update username colors
+}
+function SaveToCookie() {
+    KEY2=KeyFromJSON(JSON.parse(document.getElementById("mycreds").value))
+    docCookies.setItem("mykey", JSON.stringify(KEY2.AllPartsJSON()));
+    LogJSON(KEY2.AllPartsJSON())
+    Log("Set cookie from doc: ")
+    LogJSON(document.cookie)
+    KeyToDoc()
+}
+function KeyFromCookie() {
+    return KeyFromJSON(JSON.parse(docCookies.getItem("mykey")))
+}
+function SetKeyFromCookie() {
+    KEY2=KeyFromCookie()
+    KeyToDoc()
+}
+
+function KeyToDoc() {
+    document.getElementById("mycreds").value=JSON.stringify(KEY2.AllPartsJSON(),null,4)
+    document.getElementById("credsdifficulty").innerHTML="Key.  Proof Difficulty: "+KEY2.ProofDifficulty()
+    document.getElementById("myname").value=KEY2.e.substr(0,KEY2.e.length-1)
+}
+
+window.onload = function() {
+    //Log(RSA.encrypt("hi", $key))
+    MakeRequest("json");
+	Log(sha1_2("hello"))
+	Log(sha1("hello"))
+	Log(parseBigInt(sha1("hello"),16).toString(64))
+	/*for(i=0;i<1255;i++)
+		Log(parseBigInt(i.toString(16),16).toString(64))*/
+    //
+    
+    Log("try rsa")
+    Log(parseBigInt("{}",256).toString(64))
+    var tstring="a{}{F{}a"
+    Log(s2r(tstring))
+    Log(r2s(s2r(tstring)))
+    //KEY2=GenerateKey()
+    //KEY2=KEY2.Swap()
+    Log("Cookie: ")
+    Log(document.cookie)
+    
+    // initialize with invalid key
+    KEY2=KeyFromParts()  
+    Log("Reading cookie")
+    try {
+        //KEY2=KeyFromJSON(JSON.parse(document.cookie))
+        KEY2=KeyFromCookie()
+        Log(KEY2.Decrypt(KEY2.Encrypt("Worx"))=="Worx"?"Key works":"Key does not work!")
+    } catch(e) { Log("Error parsing cookie: "+e)
+        do_genrsa1() // sets KEY2
+    }
+    Log(KeyToString(KEY2))
+    
+    KeyToDoc()
+    
+    var TESTKEY=KeyFromJSON(GenerateKey());
+    Log(JSON.stringify(TESTKEY))
+    
+    {
+        var fromstr=KeyToString(TESTKEY)
+        Log("KeyToString: "+fromstr)
+        Log("StringToKey: "+JSON.stringify(StringToKey(fromstr)))
+    }
+
+    {    
+        var otext="he3ge"
+        var cipher=TESTKEY.Encrypt(otext)
+        Log("Ciphertext: "+cipher)
+        var decrypt=TESTKEY.Decrypt(cipher)
+        Log("Decrypted: "+decrypt)
+        if(otext!=decrypt)
+            Log("DECRYPTION FAILED")
+        else
+            Log("Crypto succeeded")
+    }
+    
+    Log("SHA1: "+sha1_64("shatest"))
+    
+    
+    var message="hihihi"
+    //Log("Signature: "+TESTKEY.SignMessage(message))
+    
+    var signature=TESTKEY.SignMessage(message)
+    Log("Signature: "+signature)
+    Log(TESTKEY.CheckSignature(message,signature))
+    var proof=ProoveWork("shtest")
+    Log("Proof: "+proof)
+    Log("Verifyproof: "+VerifyProof("shtest",proof))
+    Log("rsa success")
+    LogHTML(JSONToHtml({a:1}))
+    //LogHTML(JSONToHtml(TESTKEY))
+    
+    
+    if(!(window.jQuery && window.jQuery.fn.jquery == '1.6.2')) {
+      var s = document.createElement('script');
+      s.setAttribute('src', 'http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js');
+      s.setAttribute('type', 'text/javascript');
+      document.getElementsByTagName('head')[0].appendChild(s);
+    }
+    Log(KeyToString(TESTKEY))
+    
+    Log("TEST DONE")
+    
+    Post("just checking in, url="+document.URL)
+    
+    document.getElementById("log").style="visibility:hidden;"
+
+};
+
+function posted() {
+    Log("post succesful")
+}
+function NewTopic() {
+    Reply("root",document.getElementById("newtopictext").value)
+}
+
+function UpdateAllEntries() {
+    var ae=document.getElementById("allentries");
+    ae.value=JSON.stringify(database,null,4)
+    //ae.onclick=false
+}
+/*
+commented out html:
+
+<button onclick="UpdateAllEntries()">Udpate</button><br />
+<textarea id="allentries" style="width:500;height:500"></textarea>
+<a class="pbutton" onclick="MakeRequest('reset')" href="javascript:void(0)">Reset</a>
+*/
+</script>
+</head>
+
+<body>
+<P>
+<font face="arial">
+<a href="readme.txt">wabe </a><a href=server.js>server source</a><a href=index_old.html>old version</a>
+<div />  
+</font>
+<a class="pbutton" onclick="MakeRequest('json');" href="javascript:void(0)" title="Update comments without reloading the page.">Update</a>
+<a class="pbutton" onclick="NewTopic()" href="javascript:void(0)" title="Post a new top-level comment">New Topic</a>
+<input type="text" id=newtopictext />
+<br />
+<a class="pbutton" onclick="NormalView()" href="javascript:void(0)" title="">NormalView</a>
+<a class="pbutton" onclick="SequentialView()" href="javascript:void(0)" title="">SequentialView</a>
+<a class="pbutton" onclick="ViewStructs()" id="viewstructsbutton" href="javascript:void(0)" title="">Structs</a>
+
+</P>
+<div  style="position:absolute;left:500px;top:10px">
+<div style="position:absolute;left:210px;top:0px;width:400;height:120;overflow:hidden;">
+<b id=credsdifficulty></b>
+<a onclick="SaveToCookie()" class="pbutton" href="javascript:void(0)" title="Save the key in the text box to the cookie">Save to Cookie</a>
+<a onclick="SetKeyFromCookie()" class="pbutton" href="javascript:void(0)" title="Load the key stored in the cookie">Load from Cookie</a><br />
+<textarea id=mycreds wrap='off' style="width:300;height:100;overflow:hidden;">...</textarea>
+</div>
+<form>
+name <input type=text value="user" id=myname size=16></input><br />
+bits <input type=text value="128" id=mybits size=5></input><br />
+diff <input type=text value="10" id=mypostdifficulty size=5></input><br />
+</form>
+<div><a onclick="do_genrsa1()" class="pbutton" href="javascript:void(0)" title="Generate a *new* key, overwriting your old one. (make sure to back it up first if you care)">Generate</a>
+<a onclick="MoreProof()" id=proofbutton class="pbutton" href="javascript:void(0)" title="Attempt to generate a longer proof for your public key, to prove you care about it.  Make sure to save it if it finds a new one." >More Proof</a>
+</div>
+</div>
+
+
+<p id="log" style="float:right;position:relative;top:60px;width:500px;height:400px;overflow:auto;margin:10px;background:rgb(230,230,250);">Log:</p>
+<div>
+Page:
+<p id="page" class="comments">Requesting..</p>
+</div>
+
+</body>
+
+

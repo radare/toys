@@ -1,0 +1,20 @@
+{
+  "name": "escapes.js",
+  "description": "write ansii art png files",
+  "version": "0.0.1",
+  "url": "http://escapes.js",
+  "author": {
+    "name": "pancake",
+    "email": "pancake@nopcode.org"
+  },
+  "dependencies": {
+    "jquery": "1.7",
+    "canvas": "0.12"
+  },
+  "keywords": [
+    "art",
+    "ansi",
+    "ascii",
+    "render"
+  ]
+}

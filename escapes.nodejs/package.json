@@ -1,8 +1,8 @@
 {
   "name": "escapes.js",
-  "description": "write ansii art png files",
-  "version": "0.0.1",
-  "url": "http://escapes.js",
+  "description": "nodejs version of escapes.js to write ansii art png files",
+  "version": "0.1.1",
+  "url": "http://sixteencolors.net/",
   "author": {
     "name": "pancake",
     "email": "pancake@nopcode.org"

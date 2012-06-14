@@ -57,9 +57,9 @@ case "$1" in
 		echo "Usage: g -D userkey"
 		exit 1
 	fi
-	a=`$0 -s | grep $2 |cut -d ' ' -f 1`
+	a=`$0 -s | grep $2 |cut -d ' ' -f 2`
 	if [ -n "$a" ]; then
-		$gpg --delete-secret-key $2
+		$gpg --delete-secret-key $a
 		if [ $? = 0 ]; then
 			echo "secret (private) key deleted"
 		else
@@ -79,17 +79,25 @@ case "$1" in
 	fi
 	c=0
 	export c
-	$gpg --list-secret-keys | grep -e ^ssb -e ^uid | awk '{print $2}' | \
+# | awk '{print $2}' | 
+	$gpg -K | grep -e ^sec -e ^ssb -e ^uid | \
 		while : ; do
 			read A
 			[ -z "$A" ] && break
 			if [ $c = 0 ]; then
-				uid="$A"
+				sec="`echo $A | awk '{print $2}' | cut -d / -f 2`"
+				exp="`echo $A | cut -d : -f2 | cut -c 2-11`"
 				c=1
 			else
-				ssb="`echo $A |cut -d / -f 2`"
-				c=0
-				echo "$ssb $uid"
+				if [ $c = 1 ]; then
+					uid="`echo $A|awk ' {print $2}'`"
+					c=2
+				else 
+					ssb="`echo $A |awk '{print $2}' | cut -d / -f 2`"
+					dat="`echo $A |awk '{print $3}' | cut -d / -f 2`"
+					c=0
+					echo "$ssb $sec $dat - $exp $uid"
+				fi
 			fi
 		done
 	;;
@@ -111,17 +119,8 @@ case "$1" in
 		while : ; do
 			[ -z "$A" ] && break
 			B=$(echo $A|cut -c 1-64)
-			A=$(echo $A|cut -c 65-)
-			if [ -z "$A" ]; then
-				L=$(printf "$B"|wc -c)
-				OP=$(($L-4))
-				O=$(echo "$B"|cut -c 1-$OP)
-				O2=$(echo "$B"|cut -c $OP-)
-				echo "$O"
-				echo "$O2"
-			else
-				echo "$B"
-			fi
+			A=$(echo $A|cut -c 64-)
+			echo "$B"
 		done
 	done
 	echo "-----END PGP MESSAGE-----"

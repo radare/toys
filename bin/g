@@ -22,6 +22,8 @@ case "$1" in
 	echo " -s         list secret keys (to decrypt)"
 	echo " -s [key]   show private key" # Same as -E?
 	echo " -e [user]  encrypt for user"
+	echo " -se [user] sign and encrypt for user"
+	echo " -z         encode and sign a message"
 	echo " -c         encrypt using simmetric key"
 	echo " -d         decrypt"
 	echo " -D [key]   delete key"
@@ -30,8 +32,11 @@ case "$1" in
 	echo " -I [file]  import key"
 	echo " -o, -O     filter for oneliner to multiline"
 	;;
+-z)
+	$gpg -a -s
+	;;
 -d)
-	$gpg -d $2 2>/dev/null
+	$gpg -d $2
 	;;
 -c)
 	$gpg -a -c
@@ -101,6 +106,13 @@ case "$1" in
 			fi
 		done
 	;;
+-se|-es)
+	if [ -z "$2" ]; then
+		echo "Usage: g -e [key]"
+		exit 1
+	fi
+	$gpg -z 9 -a -s -r $2 -e $3 2>/dev/null | grep -v ^Version:
+	;;
 -e)
 	if [ -z "$2" ]; then
 		echo "Usage: g -e [key]"
@@ -109,20 +121,22 @@ case "$1" in
 	$gpg -z 9 -a -r $2 -e $3 2>/dev/null | grep -v ^Version:
 	;;
 -o)
-	grep -v Version: | grep -v "PGP MESSAGE" | tr '\n' ' ' | sed -e 's, ,,g'
+	grep -v Version: | grep -v "PGP MESSAGE--" | tr '\n' ' ' | sed -e 's, ,,g'
 	;;
 -O)
 	echo "-----BEGIN PGP MESSAGE-----"
+	echo
 	while : ; do
 		read A
 		[ -z "$A" ] && break
 		while : ; do
 			[ -z "$A" ] && break
-			B=$(echo $A|cut -c 1-64)
-			A=$(echo $A|cut -c 64-)
+			B="`echo $A|cut -c 1-64`"
+			A="`echo $A|cut -c 65-`"
 			echo "$B"
 		done
 	done
+	echo
 	echo "-----END PGP MESSAGE-----"
 	;;
 -L)

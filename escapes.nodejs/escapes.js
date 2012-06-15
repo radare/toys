@@ -396,10 +396,10 @@ cursor.column = 1;
     };
 
 
-    escapes = function (url, callback, options) {
+    escapes = function (data, callback, options) {
         var property, cursor = new Cursor(options);
 
-console.log (url);
+	console.log ("escapes",data);
         options = options || {};
         for (property in options) {
             cursor[property] = options[property];
@@ -411,8 +411,7 @@ console.log (url);
 
         cursor.clearCanvas();
 
-var data = url;
-	var data = fs.readFileSync (url).toString ();
+	// var data = fs.readFileSync (url).toString ();
         //binaryGet(url, function (data) {
             cursor.parse(data, {
                 onEscape    : cursor.escape,

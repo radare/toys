@@ -1,0 +1,17 @@
+#!/bin/sh
+# Fredrik Rodland
+# dev_____AT____rodland.no
+# http://rodland.no
+# 20081004
+
+MIN=$1
+MAX=$2
+PAD=$3
+LENGTH=${#MAX}
+
+if [ $PAD ]; then
+     W="-w %0$LENGTH""d"
+fi
+
+let NMB_STEP=$MAX-$MIN+1
+jot $W $NMB_STEP $MIN

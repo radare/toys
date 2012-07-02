@@ -1,10 +1,11 @@
 #!/bin/sh
 # etherpad-lite command line utility
 # author pancake<nopcode.org>
-# date 2011-11-16
+# date 2012-07-02
 
 DB=var/dirty.sqlite
-LOG=var/log.txt
+LOG=/dev/null
+#var/log.txt
 K=var/.run
 
 q() {
@@ -67,30 +68,32 @@ rmuser)
 		echo "Usage: $0 rmuser [userid]"
 	fi
 	;;
+kill)
+	ps auxw| grep ether.sh
+	echo TODO
+	;;
 start)
 	if (sh $0 check > /dev/null); then
 		echo already running
 		exit 1
 	else
 		echo "starting etherpad-lite daemon..." 
-		sed -e 's,bin/install,#bin/install,' bin/run.sh > bin/run.sh.x
 		touch $K
 		( while [ -f $K ] ; do 
-			sh bin/run.sh.x > ${LOG}
+			sh $0 run > ${LOG}
 			sleep 1
 		done ) &
 		sleep 2
 	fi
 	;;
 run)
-	sed -e 's,bin/install,#bin/install,' bin/run.sh > bin/run.sh.x
-	sh bin/run.sh.x
+	node src/node/server.js
 	;;
 stop)
+	rm -f $K
 	if (sh $0 check > /dev/null); then
 		echo "stopping etherpad-lite daemon..." 
-		rm -f $K
-		pkill -INT -f "node server.js"
+		pkill -INT -f "node src/node/server.js"
 		sleep 2
 	else
 		echo already stopped
@@ -98,7 +101,7 @@ stop)
 	fi
 	;;
 check)
-	pgrep -f "node server.js" > /dev/null
+	pgrep -f "node src/node/server.js" > /dev/null
 	r=$?
 	if [ $r = 0 ]; then
 		echo "running"
@@ -156,10 +159,10 @@ clean)
 	q "select count(key) from store where value like '%Welcome to Etherpad Lite%';"
 	p=$(q "select key from store where value like '%Welcome to Etherpad Lite%';" | cut -d : -f 2)
 	for a in $p ; do
-		echo "AAAA($a))"
+		echo "delete empty: $a"
 		q "delete from store where key = 'pad2readonly:$a';"
 	done
-	q "delete from store where value like '%Welcome to Etherpad Lite%';"
+	q "delete from store where value like '%Welcome to pad.nopcode.org%';"
 	sh $0 clean-users
 	printf "db size: "
 	q ".dump store" | sqlite3 ${DB}.new

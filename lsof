@@ -1,0 +1,18 @@
+#!/bin/sh
+cd /proc
+for a in * ; do
+	test "$a" -gt 0 2> /dev/null
+	[ ! $? = 0 ] && continue
+	PID="$a"
+	NAM="`readlink $a/exe`"
+	[ -z "${NAM}" ] && continue
+	NAM="`basename ${NAM}`"
+	(
+		cd $a/fd
+		for b in * ; do
+			LNK="`readlink $b`"
+			[ -z "${LNK}" ] && continue
+			printf "$PID\t$NAM\t$LNK\n"
+		done
+	)
+done

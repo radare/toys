@@ -1,0 +1,21 @@
+YouTerm script
+==============
+
+http://www.youterm.com/
+
+The YouTerm 'script' program is based on the NetBSD one. With
+some minor modifications (just for portability, and usability).
+
+This package provides:
+
+  yt-script : youterm script
+
+    A program to record, play, with some sugar (append, nonsleep).
+
+
+  yt-termcast : youterm termcast wizard
+
+    A simple wizard that helps you to create termcasts.
+
+
+--pancake

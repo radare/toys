@@ -1,0 +1,64 @@
+#!/usr/bin/env perl
+#
+# YouTerm
+#
+# author: pancake <pancake@youterm.com>
+#
+
+$|=1;
+
+my $name = $ARGV[0];
+my $catg = $ARGV[1];
+my $desc = $ARGV[2];
+
+if ($name eq "-h") {
+	print "Usage: yt-termcast [name] [category] [description]\n";
+	exit(0);
+}
+
+system("yt-script -h 2>/dev/null") and
+	die "Cannot find 'yt-script' progran in PATH\n";
+
+print <<_EOF_
+
+Y, /Y oOXOo U; # o44877 8P"" HkVx  om.  n 
+ 7Y/  O( )O UR &   78   Yeo= )#./) 8M"v"G
+  Y    OoO   7U'   46o  /Gk, 78 <  3#   9   [  Termcast creator  ]
+
+_EOF_
+;
+
+
+if ( -d "$catg" ) {
+	print "WARNING: Directory already exists.\n";
+} 
+if ($name eq "") {
+	print "Termcast name: ";
+	chomp($name=<STDIN>);
+}
+if ($catg eq "") {
+	print "Category (f.e.: games, games/rpg): ";
+	chomp($catg=<STDIN>);
+}
+
+if ($desc eq "") {
+	print "Description: ";
+	chomp($desc=<STDIN>);
+}
+
+system("mkdir -p $catg/$name");
+print "Press intro to start recording..";
+<STDIN>;
+
+system("yt-script -r $catg/$name/ytscript"); 
+#chdir("$catg/$name");
+chomp(my $oldpwd=`pwd`);
+system("echo '$name' > $catg/$name/name");
+system("echo '$desc' > $catg/$name/message.txt");
+
+#chdir($oldpwd);
+
+$tarball="$catg/$name";
+$tarball=~s/\//\./g;
+$tarball.=".termcast";
+system("tar czvf $tarball $catg");

@@ -1,0 +1,14 @@
+#!/bin/sh
+killall sobexsrv 2>&1 >/dev/null
+mkdir -p /media/mmc1/inbox
+sudo -u user sobexsrv -Ir /media/mmc1/inbox
+if [ $? = 0 ]; then
+	/usr/sbin/hciconfig hci0 piscan
+	[ ! $? = 0 ] && echo "You need root to change device visibility." && echo ""
+	echo "sobexsrv is now running."
+	echo ""
+	echo "Press any key to disable the OBEX server."
+	eread >/dev/null
+	killall sobexsrv 2>&1 >/dev/null
+	/usr/sbin/hciconfig hci0 noscan 2>&1 >/dev/null
+fi

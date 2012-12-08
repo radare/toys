@@ -1,0 +1,9 @@
+#!/bin/sh
+
+. config
+
+./log "bluespam ${VERSION} started"
+./setup || exit 1
+./reset
+rm -f ${DB}/stop
+( eval ./mode-${MODE} ) &

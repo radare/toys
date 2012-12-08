@@ -1,0 +1,29 @@
+#!/bin/sh
+# TODO use cache !! and readline for input
+
+printf "Destination: "
+read ADDR
+
+if [ -z "${ADDR}" ]; then
+	echo "Invalid destination."
+	exit 1
+fi
+
+FILE=/tmp/note.txt
+vi ${FILE}
+
+printf "Autodetecting channel...  "
+CHAN=`sdptool  search --bdaddr ${ADDR} OPUSH| grep Chan| awk -F : '{print $2}' | sed -e 's,.,,'`
+echo "${CHAN}"
+
+eval "CHAN=${CHAN}"
+if [ -e "${FILE}" ]; then
+	printf "Sending file... "
+	ussp-push ${ADDR}@${CHAN} ${FILE} `basename ${FILE}`
+else
+	echo "File does not exist"
+fi
+
+rm -f /tmp/note.txt
+
+eread 2>&1 >/dev/null

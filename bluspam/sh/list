@@ -1,0 +1,18 @@
+#!/bin/sh
+
+DATA=`sdptool search OPUSH | grep -e Channel: -e "for OPUSH on"`
+
+addr=""
+key=""
+for a in ${DATA}; do
+	case "$key" in
+	"addr") addr="$a"; ;;
+	"channel") echo "$addr@$a" ; ;;
+	esac
+	key=""
+	case $a in
+	"on") key="addr"; ;;
+	"Channel:") key="channel"; ;;
+	*) key=""
+	esac
+done

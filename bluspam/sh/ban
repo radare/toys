@@ -1,0 +1,20 @@
+#!/bin/sh
+
+. config
+
+ADDR=$1
+
+if [ -z "${ADDR}" ]; then
+	echo "Usage: ban [addr]"
+	exit 1
+fi
+
+LOCK=`cat ${DB}/ban | grep ^${ADDR}`
+if [ "${LOCK}" ]; then
+	exit 1
+else
+	echo ${ADDR} >> ${DB}/ban
+	echo "Device banned"
+fi
+
+exit 0

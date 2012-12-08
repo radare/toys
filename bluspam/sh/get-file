@@ -1,0 +1,25 @@
+#!/bin/sh
+
+. config
+
+#FILES=`ls ${FILES} | sort`
+case "${ORDER}" in
+"az")
+	IDX=`cat ${DB}/idx`
+	IDX=$((${IDX}+1))
+	COUNT=`ls ${FILES} | wc -l`
+	if [ ${COUNT} -lt ${IDX} ]; then
+		IDX=1
+	fi
+	FILE=`ls ${FILES} |head -n ${IDX} | tail -n 1`
+	echo ${IDX} > ${DB}/idx
+	echo ${FILE}
+	;;
+"random")
+	COUNT=`ls ${FILES} | wc -l`
+	IDX=$((${RANDOM}%${COUNT}))
+	FILE=`ls ${FILES} |head -n ${IDX} | tail -n 1`
+	echo ${IDX} > ${DB}/idx
+	echo ${FILE}
+	;;
+esac

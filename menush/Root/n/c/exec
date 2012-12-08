@@ -1,0 +1,6 @@
+#!/bin/sh
+IFACE="eth0"
+printf "New IP Address: "
+read IP
+ifconfig ${IFACE} ${IP}
+[ -n "${IP}" ] && ifconfig ${IFACE}

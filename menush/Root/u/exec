@@ -1,0 +1,35 @@
+#!/bin/sh
+if [ -e "menush" ]; then
+	echo "Cannot sync here"
+	eread
+	exit 1
+fi
+
+cd /tmp
+wget http://news.nopcode.org/menush.tar.gz
+cd ${HOME}
+if [ "`tar --help| grep GNU`" ]; then
+tar xzvf /tmp/menush.tar.gz menush/
+else
+mkdir -p menush
+tar xzvf /tmp/menush.tar.gz menush/* \
+	menush/*/* \
+	menush/*/*/* \
+	menush/*/*/*/*
+fi
+rm -rf .menush
+mv menush .menush
+rm -rf /tmp/menush.tar.gz
+
+echo "Sync ok"
+eread
+exit 0
+rm -rf Root
+mv menush/Root .
+rm -rf menush
+rm /tmp/menush.tar.gz
+( cd ${HOME}/.menush && rm -rf `ls grep -v Root` )
+cd ${HOME}/.menush/Root
+echo ""
+echo "Sync ok. Press 'Q' to skip the 'blank screen bug'."
+eread

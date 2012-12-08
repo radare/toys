@@ -1,0 +1,47 @@
+#!/bin/sh
+#
+# pancake <youterm.com>
+
+. config
+
+while : ; do
+	[ -e "${DB}/stop" ] && break
+	# List all available devices
+	./list.do
+	[ -e "${DB}/stop" ] && break
+	ADDR=`./get-device`
+
+	if [ -n "${ADDR}" ]; then
+		FILE=`./get-file`
+		./ban ${ADDR}
+		if [ $? = 1 ]; then
+			# If it is already banned
+			sleep ${SLEEP}
+			continue
+		fi
+
+		./status
+
+		echo "SENDING"
+		./send "${FILES}/${FILE}" "${ADDR}"
+		RET=$?
+
+		case $RET in
+		"0")	./log "send ok for ${ADDR} ${FILE}" 
+			;;
+		"2")	./log "send error for ${ADDR} ${FILE}"
+			# try later
+			sleep ${SLEEP}
+			[ ${RETRY} = 1 ] && ./unban ${ADDR}
+			;;
+		*)	./log "unknown error from send" 
+			./unban ${ADDR}
+			;;
+		esac
+	else
+		echo "No devices found"
+	fi
+
+	# Waita a while
+	sleep ${SLEEP} 
+done

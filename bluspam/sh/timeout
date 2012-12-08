@@ -1,0 +1,11 @@
+#!/bin/sh
+
+. config
+
+NUM=`wc -l ${DB}/ban |awk '{print $1}'`
+NUM=$((${NUM}-1))
+
+if [ ! $NUM = 0 ]; then
+	cp ${DB}/ban ${DB}/ban.tmp
+	tail -n ${NUM} ${DB}/ban.tmp > ${DB}/ban
+fi

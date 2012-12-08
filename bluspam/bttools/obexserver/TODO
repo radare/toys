@@ -1,0 +1,10 @@
+run hcid
+run sdpd
+sdptool add --channel=10 OPUSH
+
+read function does everything into a buffer.. THIS MAY BE DANGEROUS!
+fix url2pkg when tarballs has no directory
+allow to change the target directory
+callback to userspace program to accept't
+firewall support :) by name, or baddr
+target directory is /tmp/btname/file

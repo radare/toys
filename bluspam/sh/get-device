@@ -1,0 +1,20 @@
+#!/bin/sh
+
+. config
+
+#FILES=`ls ${FILES} | sort`
+case "${ORDER_DEVICE}" in
+"az")
+	IDX=`cat ${DB}/idx-dev`
+	IDX=$((${IDX}+1))
+	COUNT=`cat ${DB}/list | wc -l`
+	if [ ${COUNT} -lt ${IDX} ]; then
+		IDX=1
+	fi
+	ADDR=`cat ${DB}/list |head -n ${IDX} | tail -n 1`
+	echo ${IDX} > ${DB}/idx-dev
+	echo ${ADDR}
+	;;
+"random")
+	;;
+esac

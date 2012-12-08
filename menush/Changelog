@@ -1,0 +1,3 @@
+20061214:
+	- Implement '-d' mode for eread (dmenu emulation) Thanks Karl!
+	- Drop media menu, add applications menu

@@ -1,0 +1,14 @@
+#!/bin/sh
+
+. config
+
+if [ -z "$1" ]; then
+	echo "Usage: log [message]"
+	exit 1
+fi
+
+DATE=`date '+%Y%m%d-%H%M%S'`
+
+echo "[LOG] ${DATE} $@"
+echo ${DATE} $@ >> ${DB}/log
+exit 0

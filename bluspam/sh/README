@@ -1,0 +1,37 @@
+Bluetooth spam daemom
+=====================
+
+   [ BTSPAM ]
+       |
+       |
+    .-----.
+    |core |
+    '-----'
+      | |
+      | |
+      | `----[ sender ] - one per device
+      |
+      |
+   [ scanner ] - one single dongle
+       
+        keep list of visible devices
+    
+
+Shared resources
+----------------
+
+   ,--.    |   ,--.   |    ,--.   |   ,--. 
+   |  |    |   |  |   |    |  |   |   |  |
+   |__|    |   |__|   |    |__|   |   |__|
+           |          |           |
+  people   |   logs   |   mutex   |   work
+-----------+----------+-----------+------------
+           |          |           |
+ list of   | retries  | locks xs2 | active
+ available | failures | people    | devices
+ devices   | pwns     | list      |
+           |          |           |
+
+
+People list
+===========

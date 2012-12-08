@@ -1,0 +1,47 @@
+#!/bin/sh
+#
+#  pancake <youterm.com>
+#
+
+
+. config
+
+FILE=$1
+ADDR=$2
+NAME=$3
+
+if [ -z "${ADDR}" ]; then
+	echo "Usage: send [file] [addr@chan] [name]"
+	exit 0
+fi
+
+#echo "FILE: ${FILE}"
+if [ -z "`echo ${ADDR} | grep :`" ]; then
+	ADDR=`hcitool scan| grep -e "${ADDR}$" | awk '{print $1}'`
+fi
+#echo "ADDR: ${ADDR}"
+
+CHAN=`echo ${ADDR}|cut -d @ -f 2`
+if [ -z "`echo ${ADDR} | grep @`" ]; then
+	CHAN=`sdptool search --bdaddr ${ADDR} OPUSH | grep Channel: | cut -d : -f 2 | awk '{print $1}'`
+	ADDR="${ADDR}@${CHAN}"
+fi
+#echo "CHAN: ${CHAN}"
+
+[ -z "${NAME}" ] && NAME=`basename ${FILE}`
+#echo "NAME: ${NAME}"
+
+./log "Sending ${NAME} to ${ADDR}"
+opush/opush --timeo ${TIMEOUT} ${ADDR} ${FILE} ${NAME}
+RET=$?
+echo "return value $RET"
+exit ${RET}
+
+# no more fun
+PROC=$!
+
+sleep ${TIMEOUT}
+sleep 2
+kill -9 ${PROC}
+exit 0
+

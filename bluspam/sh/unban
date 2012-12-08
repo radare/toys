@@ -1,0 +1,23 @@
+#!/bin/sh
+
+. config
+
+ADDR=$1
+
+if [ -z "${ADDR}" ]; then
+	echo "Usage: unban [addr]"
+	exit 1
+fi
+
+LOCK=`cat ${DB}/ban | grep ^${ADDR}`
+if [ "${LOCK}" ]; then
+	mv ${DB}/ban ${DB}/ban.tmp
+	cat ${DB}/ban.tmp | grep -v ^${ADDR} > ${DB}/ban
+	echo "Device unbanned"
+	exit 0
+else
+	echo "Device not banned"
+	exit 1
+fi
+
+exit 0

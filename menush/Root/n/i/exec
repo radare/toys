@@ -1,0 +1,4 @@
+#!/bin/sh
+IFACE="wlan0"
+/sbin/ifconfig ${IFACE} ${IP}
+eread > /dev/null

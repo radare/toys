@@ -1,0 +1,19 @@
+Changes for 0.3.00 (2006-09-04)
+===============================
+- Added _ETHREAD.Tcb.ApcState.Process to XML output.
+- Simplified date conversion.
+- Fixed a bug in the handling of _ETHREAD.CreateTime.
+
+Changes for 0.3.00 (2006-09-01)
+===============================
+- Added option --xmlfile for XML output.
+
+Changes for 0.2.02 (2006-03-25)
+===============================
+- Added option --align for speed improvement.
+- Removed code for alignment checks.
+
+Changes for 0.2.01 (2006-03-05)
+===============================
+- Added Page Directory Base Address to screen output.
+- Trimmed display width of "Offset" in screen output.

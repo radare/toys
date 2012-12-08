@@ -1,0 +1,23 @@
+.TH obexserver 1 "02 Jun 2003" "User Manuals" "User Manuals"
+.SH NAME
+obexserver \- receive files with OBEX protocol and Bluetooth
+.SH SYNOPSIS
+.B obexserver
+.SH DESCRIPTION
+obexserver is a small tool which uses openobex to receive files using
+the OBEX (object exchange) protocol via Bluetooth. It is mainly used 
+to receive files from bluetooth enabled devices (e.g. mobile phones 
+like the nokia 7650).
+
+For using obexserver with bluetooth, you first need to register the
+OPUSH service by using the command 'sdptool add --channel=10 OPUSH'.
+The channel number is right for nokia but can be different for other
+phones. You can use sdptool and its browsing service to check which
+channel your mobile phone / bluetooth device uses for OBEX.
+
+After you have registered the service you can just start obexserver.
+It will store received files in /tmp.
+.SH AUTHOR
+For this manpage: Michael Holzt <kju@debian.org>
+.SH VERSION
+1.0

@@ -1,0 +1,32 @@
+#!/bin/sh
+#
+
+   #
+   ###.
+#  #  ##      ___  ___  __     .
+ # # ## _|\_ /  _|| _ \'  \ /|/ |
+  ###'  \  _|\   \|  _/ -  |    |
+  ###.   | |_/`-  |  || _  |    |
+ # # ##  |__/\___/|_ ||_|__|_\|_|
+#  #  ##
+   ###'
+   #
+
+
+NAME=spam0
+TIMEOUT=60
+SLEEP=1 # rush mode
+DB=./db/
+FILES=./files/
+RETRY=1
+
+MODE=single
+
+IFACES=hci0
+
+ORDER=az
+ORDER_DEVICE=az
+
+VERSION=0.1
+# random
+# round-robin...

@@ -1,0 +1,3 @@
+#!/bin/sh
+/usr/bin/osso_pdfviewer
+#dbus-send --print-reply --type=method_call --dest=com.nokia.osso_pdfviewer /usr/bin/osso_pdfviewer com.nokia.osso_pdfviewer.mime_open string:file://%s

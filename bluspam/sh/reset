@@ -1,0 +1,10 @@
+#!/bin/sh
+
+. config
+
+echo 0 > ${DB}/idx
+echo 0 > ${DB}/idx-dev
+:> ${DB}/list
+:> ${DB}/lock
+:> ${DB}/logs
+:> ${DB}/ban

@@ -1,0 +1,4 @@
+#!/bin/sh
+hcitool scan
+echo "Press any key..."
+eread 2>&1 >/dev/null

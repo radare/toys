@@ -1,0 +1,12 @@
+# Automatically generated config file for bluspam
+NAME=spam0
+TIMEOUT=60
+SLEEP=1
+RETRY=1
+MODE=single
+IFACES=hci0
+ORDER=az
+ORDER_DEVICE=az
+DB=./db/
+FILES=./files/
+VERSION=0.1

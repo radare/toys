@@ -1,0 +1,59 @@
+#!/bin/sh
+#
+# pancake <youterm.com>
+
+if [ $1 = "-h" ]; then
+echo << EOF
+Works with a single bluetooth interface.
+
+Scans once, and tries to send a file to each device and loops again.
+EOF
+fi
+
+. config
+
+while : ; do
+	[ -e "${DB}/stop" ] && break
+	# List all available devices
+	./list.do
+	for ADDR in `cat db/list`; do
+		[ -e "${DB}/stop" ] && break
+		#ADDR=`./get-device`
+
+		if [ -n "${ADDR}" ]; then
+			FILE=`./get-file`
+			./ban ${ADDR}
+			if [ $? = 1 ]; then
+				# If it is already banned
+				sleep ${SLEEP}
+				continue
+			fi
+
+			./status
+
+			echo "SENDING"
+			./send "${FILES}/${FILE}" "${ADDR}"
+			RET=$?
+
+			case $RET in
+			"0")	./log "send ok for ${ADDR} ${FILE}" 
+				;;
+			"1")	./log "unknown error from send" 
+				./unban ${ADDR}
+				;;
+			"2")	./log "send error for ${ADDR} ${FILE}"
+				# try later
+				sleep ${SLEEP}
+				[ ${RETRY} = 1 ] && ./unban ${ADDR}
+				;;
+			esac
+		else
+			echo "No devices found"
+		fi
+
+		# Waita a while
+		sleep ${SLEEP} 
+	done
+
+	./timeout
+done

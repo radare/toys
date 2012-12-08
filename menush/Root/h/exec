@@ -1,0 +1,8 @@
+#!/bin/sh
+echo "
+Tip of the release:
+
+  Use 'Q' to quit menush.
+
+"
+eread >/dev/null

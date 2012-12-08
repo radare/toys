@@ -1,0 +1,35 @@
+
+       #
+       ###.
+    #  #  ##      ___  ___  __     .
+     # # ## _|\_ /  _|| _ \'  \ /|/ |
+      ###'  \  _|\   \|  _/ -  |    |
+      ###.   | |_/`-  |  || _  |    |
+     # # ##  |__/\___/|_ ||_|__|_\|_|
+    #  #  ##
+       ###'
+       #
+
+------------------------------------------
+
+ BluetoothSpammer
+
+  - This a program to massive send files via bluetooth
+    in a kiddie way with just only some stupid clicks.
+
+  DO NOT BE DUMB! USE IT WITH RESPONSABILITY AND HUMOUR SENSE
+
+
+
+ Depends on:
+
+  - Vala            svn (or at least v0.1.4)
+  - gtk2+           The Gui
+  - bluez-utils     hciconfig and so (easy to port to BSD)
+  - openobex        for opush (a fixupped ussp-push)
+
+
+
+ Installation:
+
+  $ make install PREFIX=/usr

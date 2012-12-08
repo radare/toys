@@ -1,0 +1,7 @@
+#!/bin/sh
+
+. config
+
+echo 1 > ${DB}/stop
+./log Bluspam stopped
+pkill ussp-push

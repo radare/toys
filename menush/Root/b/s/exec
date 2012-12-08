@@ -1,0 +1,25 @@
+#!/bin/sh
+
+printf "Destination: "
+read ADDR
+
+if [ -z "${ADDR}" ]; then
+	echo "Invalid destination."
+	exit 1
+fi
+
+printf "File: "
+FILE=`eread -r`
+
+printf "Autodetecting channel...  "
+CHAN=`sdptool  search --bdaddr ${ADDR} OPUSH| grep Chan| awk -F : '{print $2}' | sed -e 's,.,,'`
+echo "${CHAN}"
+
+eval "CHAN=${CHAN}"
+if [ -e "${FILE}" ]; then
+	printf "Sending file... "
+	ussp-push ${ADDR}@${CHAN} ${FILE} `basename ${FILE}`
+else
+	echo "File does not exist"
+fi
+eread

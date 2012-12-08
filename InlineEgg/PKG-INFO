@@ -1,0 +1,10 @@
+Metadata-Version: 1.0
+Name: InlineEgg
+Version: 1.08
+Summary: Collection of classes for creating small assembly programs. These are specially tailored for eggs/shellcode creation.
+Home-page: http://oss.coresecurity.com/projects/inlineegg.html
+Author: Gerardo Richarte
+Author-email: gera@coresecurity.com
+License: UNKNOWN
+Description: UNKNOWN
+Platform: UNKNOWN

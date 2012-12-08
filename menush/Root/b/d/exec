@@ -1,0 +1,6 @@
+#!/bin/sh
+printf "Address: "
+read ADDR
+sdptool browse ${ADDR} | grep -e Chan -e Name -e Brow
+echo "Press any key..."
+eread

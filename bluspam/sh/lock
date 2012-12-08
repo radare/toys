@@ -1,0 +1,21 @@
+#!/bin/sh
+
+. config
+
+ADDR=$1
+
+if [ -z "${ADDR}" ]; then
+	echo "Usage: lock [addr]"
+	exit 1
+fi
+
+LOCK=`cat ${DB}/lock | grep ^${ADDR}`
+if [ "${LOCK}" ]; then
+	echo "Device already locked"
+	exit 1
+else
+	echo ${ADDR} >> ${DB}/lock
+	echo "Device locked"
+fi
+
+exit 0

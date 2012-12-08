@@ -1,0 +1,23 @@
+#!/bin/sh
+
+. config
+
+ADDR=$1
+
+if [ -z "${ADDR}" ]; then
+	echo "Usage: unlock [addr]"
+	exit 1
+fi
+
+LOCK=`cat ${DB}/lock | grep ^${ADDR}`
+if [ "${LOCK}" ]; then
+	mv ${DB}/lock ${DB}/lock.tmp
+	cat ${DB}/lock.tmp | grep -v ^${ADDR} > ${DB}/lock
+	echo "Device unlocked"
+	exit 0
+else
+	echo "Device not locked"
+	exit 1
+fi
+
+exit 0

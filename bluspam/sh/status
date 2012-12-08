@@ -1,0 +1,6 @@
+#!/bin/sh
+
+. config
+
+ITEMS=`wc -l ${DB}/list | awk '{print $1}'`
+echo "Devices: ${ITEMS}"

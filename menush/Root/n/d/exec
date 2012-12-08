@@ -1,0 +1,5 @@
+pkill udhcpc
+route delete default
+udhcpc -i wlan0
+eread
+#echo "nameserver 80.58.61.250" > /etc/resolv.conf

@@ -1,0 +1,13 @@
+#!/bin/sh
+
+. config
+
+for A in ${IFACES}; do
+	hciconfig ${A} name ${NAME} up 2>&1 > /dev/null
+	if [ $? = 0 ]; then
+		echo "${A}: ${NAME}"
+	else
+		./log "Cannot open device ${A}"
+		exit 1
+	fi
+done

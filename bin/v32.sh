@@ -17,7 +17,7 @@ case "$1" in
 	;;
 -i|init)
 	sudo setcap cap_sys_chroot=ep /usr/bin/chroot 
-	fakeroot linux32 xbps-install -r $p base-system
+	fakeroot linux32 xbps-install -r $p base-chroot
 	;;
 *)
 	cd $p/${HOME}

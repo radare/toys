@@ -1,0 +1,21 @@
+#!/bin/sh
+#
+# copyleft pancake@nopcode.org 2012
+#
+# Usage:
+#  `sln`
+#  sln [path]
+#
+# sln is a short link to a file or directory:
+# 
+# $ `sln`
+# $ sln /usr/bin
+# p=/usr/bin
+# $ cp -f *.bin $p
+# 
+# share environment
+#
+# $ sln > .export
+# $ . ./.export ; rm .export
+
+echo 'eval sln() { if [ -z "$1" ]; then env|grep -v _= |grep "^.="; else if [ -n "`echo $1|grep ^/`" ]; then d="$1"; else d="$PWD/$1"; fi ; _f="$2" ;[ -z "$2" ] && _f=p; export $_f="$d";echo "$_=$d";fi; }'

@@ -1,0 +1,137 @@
+#!/bin/sh
+# iOS pancake tools - my toolbox for iOS
+# author: pancake // 2012
+#
+
+case "$1" in
+"respring")
+	killall SpringBoard
+	;;
+"ldid")
+	shift
+	for a in $@ ; do
+		# ldone -s $a
+		ldid $a -S
+	done
+	;;
+"ls")
+	for a in /Applications/*.app ; do
+		prg=$(echo "$a" | cut -d / -f 3)
+		if [ "$2" = "-l" ]; then
+			cd "$a"
+			cd ..
+			du -hs "$prg"
+		else
+			printf "$prg\t$a\n"
+		fi
+	done
+	for a in /var/mobile/Applications/*/*.app ; do
+		prg=$(echo "$a" | cut -d / -f 6)
+		if [ "$2" = "-l" ]; then
+			cd "$a/.."
+			du -hs "$prg"
+		else
+			printf "$prg\t$a\n"
+		fi
+	done
+	;;
+"cd")
+	for a in /Applications/*.app ; do
+		prg=$(echo $a | cut -d / -f 3)
+		if [ "$2" = "$prg" ]; then
+			echo "eval cd $a"
+			exit 0
+		fi
+	done
+	for a in /var/mobile/Applications/*/*.app ; do
+		prg=$(echo $a | cut -d / -f 6)
+		if [ "$2" = "$prg" ]; then
+			echo "eval cd $a"
+			exit 0
+		fi
+	done
+	;;
+"binsof")
+	dpkg -L $2 | grep bin/
+	;;
+x|"extract")
+	a=$2.d
+	mkdir $a
+	cp $2 $a
+	cd $a
+	ar x $2
+	rm $2
+	mkdir data
+	cd data
+	tar xpzvf ../data.tar.gz
+	cd ..
+	tar xpzvf control.tar.gz
+	;;
+mkdeb|makedeb|deb)
+	D=`basename $PWD | sed -e 's,\.d$,,'`
+	(cd data ; tar czpvf ../data.tar.gz *)
+	tar czpvf control.tar.gz control
+	rm -f ../$D.new
+	ar -rc ../$D.new debian-binary control.tar.gz data.tar.gz
+	;;
+"ldid-deb"|debldid)
+	ipt extract $2
+	cd $2.d
+	(
+		cd data
+		ipt ldid `find . -type f -perm +100` 2>/dev/null
+	)
+	ipt mkdeb
+	;;
+ipa-install|ipainstall)
+	;;
+ipa)
+	APP="$2"
+	DIR=`ipt cd $APP|cut -d ' ' -f 3-`
+	if [ -f "$DIR/../iTunesArtwork" -a \
+	     -f "$DIR/../iTunesMetadata.plist" ]
+	then
+		IPA="`echo $APP|sed -e 's,app$,ipa,'`"
+		mkdir tmp-ipa
+		cd tmp-ipa
+		ln -fs $DIR Payload
+		cp $DIR/../iTunesArtwork .
+		cp $DIR/../iTunesMetadata.plist .
+		zip -9 -y -r ../$IPA iTunes* Payload/*
+		rm -rf ../tmp-ipa
+		echo $IPA
+	else
+		echo "Invalid app. Cannot create ipa."
+		exit 1
+	fi
+	;;
+"minstall")
+	make install DESTDIR=/tmp/p
+	cd /tmp/p
+	ipt ldid bin/* usr/bin/*
+	tar czvpf ../p.tar.gz *
+	echo /tmp/p.tar.gz
+	;;
+"crack")
+	clutch $2
+	;;
+*|-h|help)
+	echo "Usage: ipt [cmd] [...]"
+	echo "  ipt respring      restart springboard"
+	echo "  ipt ldid <files>  ldid executable file"
+	echo "  ipt ldid-deb <deb>ldid cydia package"
+	echo "  ipt ls            list all installed apps and paths"
+	echo '  `ipt cd <app>`    evaluate output to go there'
+	echo "  ipt binsof <pkg>  list binaries of given package"
+	echo "  ipt backup <app>  backup data of the target app"       
+	echo "  ipt restore <dir> restore backup directory"
+	echo "  ipt ipa           create ipa file from application"
+	echo "  ipt install <ipa> install ipa file"
+	echo "  ipt crack <app>   Crack application"
+	echo "  ipt extract <deb> extract deb file"
+	echo "  ipt deb <dir>     create debian package from current directory"
+# TODO
+# zip -9 -y -r myAppName.ipa Payload/
+# add tool to edit locale files (plutil)
+	;;
+esac

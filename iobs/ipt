@@ -4,6 +4,12 @@
 #
 
 case "$1" in
+plist)
+	cp $2 /tmp/.xx
+	plutil -convert xml1 /tmp/.xx
+	cat /tmp/.xx
+	rm -f /tmp/.xx
+	;;
 "respring")
 	killall SpringBoard
 	;;
@@ -54,7 +60,7 @@ case "$1" in
 "binsof")
 	dpkg -L $2 | grep bin/
 	;;
-x|"extract")
+x|undeb|"extract")
 	a=$2.d
 	mkdir $a
 	cp $2 $a
@@ -70,6 +76,7 @@ x|"extract")
 mkdeb|makedeb|deb)
 	D=`basename $PWD | sed -e 's,\.d$,,'`
 	(cd data ; tar czpvf ../data.tar.gz *)
+	(cd data ; find . -type f -exec md5sum '{}' \; | sed -e 's, \./,,' > ../md5sums)
 	tar czpvf control.tar.gz control
 	rm -f ../$D.new
 	ar -rc ../$D.new debian-binary control.tar.gz data.tar.gz
@@ -117,6 +124,7 @@ ipa)
 	;;
 *|-h|help)
 	echo "Usage: ipt [cmd] [...]"
+	echo "  ipt plist <file>  show plist contents"
 	echo "  ipt respring      restart springboard"
 	echo "  ipt ldid <files>  ldid executable file"
 	echo "  ipt ldid-deb <deb>ldid cydia package"

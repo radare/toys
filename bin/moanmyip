@@ -1,0 +1,2 @@
+#!/bin/sh
+mplayer `export U=http://www.moanmyip.com; curl -s $U|grep mp3|sed -e"s,^.*_url=,$U," -e's,&.*$,,'`

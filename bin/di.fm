@@ -1,14 +1,28 @@
 #!/bin/sh
 TYPE=$1
-if [ "$(uname)" = Darwin ]; then
-	PLAYER="/Applications/VLC.app/Contents/MacOS/VLC"
-else
-	PLAYER="mplayer"
+P="/Applications/VLC.app/Contents/MacOS/VLC omxplayer mplayer"
+for a in $P ; do
+	type $a 2>&1 >/dev/null
+	if [ $? = 0 ]; then
+		PLAYER=$a
+		break
+	fi
+done
+if [ -z "$PLAYER" ]; then
+	echo "Missing player"
+	exit 1
+fi
+type curl 2>&1 > /dev/null
+if [ ! $? = 0 ]; then
+	echo "Missing curl"
+	exit 1
 fi
 if [ -z "${TYPE}" ]; then
-	curl -s www.di.fm | grep pls | cut -d '"' -f 2| cut -d / -f 5 | sed -e s,.pls,, |sort | uniq
+	curl -s www.di.fm | grep pls | cut -d '"' -f 2 | \
+		cut -d / -f 5 | sed -e s,.pls,, | sort -u
 else
-	BASE_URL=$(curl -s www.di.fm | grep 96.blue|head -n 1|cut -d '"' -f 2|cut -d / -f -4)
+	BASE_URL=$(curl -s www.di.fm | grep 96.blue | \
+		head -n 1|cut -d '"' -f 2|cut -d / -f -4)
 	#URL=http://listen.di.fm/public3/${TYPE}.pls
 	URL=${BASE_URL}/${TYPE}.pls
 	STREAM=$(curl -s ${URL} | grep File1 |cut -d = -f 2)

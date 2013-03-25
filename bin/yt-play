@@ -1,0 +1,29 @@
+#!/bin/sh
+PLAYER=""
+PLAYERS="omxplayer mplayer"
+for a in ${PLAYERS} ; do
+	type $a >/dev/null 2>&1
+	if [ $? = 0 ]; then
+		PLAYER=$a
+		break
+	fi
+done
+if [ -z "${PLAYER}" ]; then
+	echo "Cannot find a valid player"
+	exit 1
+fi
+type youtube-dl >/dev/null 2>&1
+if [ ! $? = 0 ]; then
+	echo "Cannot find youtube-dl"
+	exit 2
+fi
+
+trap INT foo
+pkill ${PLAYER} ; rm -f myfifo.part ; mkfifo myfifo.part
+(
+	${PLAYER} myfifo.part 
+	pkill python # :D
+	rm -f myfifo.part
+) &
+youtube-dl -o myfifo $@
+rm -f myfifo myfifo.part

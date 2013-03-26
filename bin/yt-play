@@ -18,12 +18,16 @@ if [ ! $? = 0 ]; then
 	exit 2
 fi
 
+foo() {
+	pkill python # :D
+	rm -f myfifo.part
+}
+
 trap INT foo
 pkill ${PLAYER} ; rm -f myfifo.part ; mkfifo myfifo.part
 (
 	${PLAYER} myfifo.part 
-	pkill python # :D
-	rm -f myfifo.part
+	foo
 ) &
 youtube-dl -o myfifo $@
 rm -f myfifo myfifo.part

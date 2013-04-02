@@ -1,4 +1,12 @@
 #!/bin/sh
-A=`hg diff $@ | grep -v '+++' | grep ^+ |wc -l`
-B=`hg diff $@ | grep -v -- '---' | grep ^- |wc -l`
-echo $((A-B))
+CMD=""
+while : ; do
+	[ -d .git ] && CMD=git break
+	[ -d .hg ] && CMD=hg break
+	cd ..
+done
+if [ -n "${CMD}" ]; then
+	A=`$CMD diff $@ | grep -v '+++' | grep ^+ |wc -l`
+	B=`$CMD diff $@ | grep -v -- '---' | grep ^- |wc -l`
+	echo $(($A-$B))
+fi

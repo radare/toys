@@ -23,7 +23,7 @@ foo() {
 	rm -f myfifo.part
 }
 
-trap INT foo
+trap foo INT
 pkill ${PLAYER} ; rm -f myfifo.part ; mkfifo myfifo.part
 (
 	${PLAYER} myfifo.part 

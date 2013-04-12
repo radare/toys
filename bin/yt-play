@@ -1,6 +1,7 @@
 #!/bin/sh
 PLAYER=""
 PLAYERS="omxplayer mplayer"
+FIFONAME='myfifo'
 for a in ${PLAYERS} ; do
 	type $a >/dev/null 2>&1
 	if [ $? = 0 ]; then
@@ -20,14 +21,24 @@ fi
 
 foo() {
 	pkill python # :D
-	rm -f myfifo.part
+	rm -f ${FIFONAME}
+}
+
+waitfifo () {
+
+	for x in 1 2 3 4 5; do
+		[ ! -e ${FIFONAME} ] && return
+		echo 'waiting for previous player to die ...'
+		sleep 1
+	done
+	echo 'giving up'
+	rm -f ${FIFONAME}
 }
 
 trap foo INT
-pkill ${PLAYER} ; rm -f myfifo.part ; mkfifo myfifo.part
+pkill ${PLAYER} ; waitfifo ; mkfifo ${FIFONAME}
 (
-	${PLAYER} myfifo.part 
+	${PLAYER} ${FIFONAME}
 	foo
 ) &
-youtube-dl -o myfifo $@
-rm -f myfifo myfifo.part
+youtube-dl --no-part -o ${FIFONAME} $@

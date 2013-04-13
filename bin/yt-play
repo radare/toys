@@ -1,7 +1,26 @@
-#!/bin/sh
+#!/bin/bash
+
+# XXXbash: I couldn't get jobs -p reliably working with dash.
+# I'm sure dash is 100% standards correct, but it's easier to
+# just punt to bash.
+
 PLAYER=""
 PLAYERS="omxplayer mplayer"
-FIFONAME='myfifo'
+FIFONAME='/tmp/yt-play-fifo'
+LOCKFILE='/tmp/yt-play-lock'
+
+# dbg?
+#set -x
+
+die ()
+{
+
+	eval=$1
+	shift
+	echo $*
+	exit ${eval}
+}
+
 for a in ${PLAYERS} ; do
 	type $a >/dev/null 2>&1
 	if [ $? = 0 ]; then
@@ -9,36 +28,111 @@ for a in ${PLAYERS} ; do
 		break
 	fi
 done
-if [ -z "${PLAYER}" ]; then
-	echo "Cannot find a valid player"
-	exit 1
-fi
-type youtube-dl >/dev/null 2>&1
-if [ ! $? = 0 ]; then
-	echo "Cannot find youtube-dl"
-	exit 2
-fi
+[ -z "${PLAYER}" ] && die 1 "Cannot find a valid player"
 
-foo() {
-	pkill python # :D
-	rm -f ${FIFONAME}
+playone ()
+{
+	local dlapp
+	local dlappargs
+
+	unset RTMPKILL
+	case "$1" in
+	*youtube.com*)
+		dlapp=youtube-dl
+		dlappargs='--no-part'
+		;;
+	*areena.yle.fi*)
+		dlapp=yle-dl
+		dlappargs='--sublang none'
+		# XXX!
+		RTMPKILL='pkill -9 rtmpdump'
+		;;
+	*)
+		die 2 "Unsupported source \"$1\""
+	esac
+	type ${dlapp} >/dev/null 2>&1 || die 3 "Cannot find ${dlapp}"
+
+	${2} ${dlapp} ${dlappargs} -o ${FIFONAME} ${1}
 }
 
-waitfifo () {
+QUITTIME=false
+quitsig ()
+{
 
-	for x in 1 2 3 4 5; do
-		[ ! -e ${FIFONAME} ] && return
-		echo 'waiting for previous player to die ...'
-		sleep 1
+	QUITTIME=true
+	cleanup
+}
+
+goner ()
+{
+
+	cleanup
+	rm -f ${FIFONAME}
+	rm -f ${LOCKFILE}
+}
+
+trap quitsig INT TERM
+
+cleanup ()
+{
+	local killmore=true
+	local killsig=''
+
+	exec 2>/dev/null
+	for sig in TERM KILL; do
+		killpids=$(jobs -p)
+		if [ ! -z "${killpids}" ]; then
+			kill ${sig} ${killpids}
+			sleep 1
+		fi
 	done
-	echo 'giving up'
-	rm -f ${FIFONAME}
+	${RTMPKILL}
+	wait
+	wait
+	wait
 }
 
-trap foo INT
-pkill ${PLAYER} ; waitfifo ; mkfifo ${FIFONAME}
-(
-	${PLAYER} ${FIFONAME}
-	foo
-) &
-youtube-dl --no-part -o ${FIFONAME} $@
+# first do a dry run to check that we know how to play all
+for arg in "$@"; do
+	playone $arg :
+done
+
+# right, to get playin'
+
+# first, check for a previous instance and take the lock
+set -o noclobber
+exec 3>&2 2>/dev/null
+while ! echo $$ > ${LOCKFILE}; do
+	prevpid=`cat ${LOCKFILE}`
+	[ $? -eq 0 ] || die 5 cannot access ${LOCKFILE}
+	echo "killing old player at $prevpid"
+	kill ${prevpid} || die 6 maybe stale lock at ${LOCKFILE}
+	sleep 1
+done
+trap goner 0
+exec 2>&3 3>&-
+mkfifo ${FIFONAME} || die 7 Failed to create fifo ${FIFONAME}
+
+# then play one-by-one
+for arg in "$@"; do
+	${QUITTIME} && break
+
+	# start the player and leech in the background so that
+	# we can get signals while they are running
+	${PLAYER} ${FIFONAME} &
+	playone $arg &
+
+	${QUITTIME} && break
+
+	# Wait for them to finish.  Wait for the downloader first, since
+	# if an invalid url was given, nothing might be written for the
+	# player thereby causing a hang.
+	wait %2
+	exec 3>&2 2>/dev/null
+	# make sure player knows it's EOF time
+	echo please please baby lemonade > ${FIFONAME}
+	exec 2>&3 3>&-
+	wait
+done
+
+exit 0

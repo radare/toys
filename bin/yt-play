@@ -112,6 +112,9 @@ trap goner 0
 exec 2>&3 3>&-
 mkfifo ${FIFONAME} || die 7 Failed to create fifo ${FIFONAME}
 
+# don't bother with further output if we're not on a tty
+test -t 0 || exec 1>/dev/null 2>/dev/null
+
 # then play one-by-one
 for arg in "$@"; do
 	${QUITTIME} && break

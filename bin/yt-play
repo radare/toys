@@ -75,14 +75,13 @@ trap quitsig INT TERM
 
 cleanup ()
 {
-	local killmore=true
 	local killsig=''
 
-	exec 2>/dev/null
+	rm -f ${FIFONAME}
 	for sig in TERM KILL; do
 		killpids=$(jobs -p)
 		if [ ! -z "${killpids}" ]; then
-			kill ${sig} ${killpids}
+			kill -${sig} ${killpids}
 			sleep 1
 		fi
 	done
@@ -128,10 +127,8 @@ for arg in "$@"; do
 	# if an invalid url was given, nothing might be written for the
 	# player thereby causing a hang.
 	wait %2
-	exec 3>&2 2>/dev/null
 	# make sure player knows it's EOF time
 	echo please please baby lemonade > ${FIFONAME}
-	exec 2>&3 3>&-
 	wait
 done
 

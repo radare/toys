@@ -9,6 +9,34 @@ PLAYERS="omxplayer mplayer"
 FIFONAME='/tmp/yt-play-fifo'
 LOCKFILE='/tmp/yt-play-lock'
 
+case "$1" in
+'-s')
+	shift
+	str="`echo $@ | sed -e 's, ,+,g'`"
+	# TODO: remove perl dependency
+	curl -s "https://www.youtube.com/results?search_query=$str" \
+	| grep '"/watch'| perl -ne 's/"/\n/g;print' \
+	| awk '{
+		if(n>0){
+			n=0;
+			print "\x1b[32m";
+			print;
+			print "\x1b[0m";
+		}
+		if(/ title=/){ n=1 }
+		if (/\/watch/){
+			if (m) {print "    http://www.youtube.com"$1;}
+			if(m>0){m=0;}else{m=1}
+		}
+	}'
+	exit 0
+	;;
+-h)
+	echo "Usage: yt-play [-s search] [url]"
+	exit 0
+	;;
+esac
+
 # dbg?
 #set -x
 

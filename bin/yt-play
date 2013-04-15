@@ -13,10 +13,9 @@ case "$1" in
 '-s')
 	shift
 	str="`echo $@ | sed -e 's, ,+,g'`"
-	# TODO: remove perl dependency
 	curl -s "https://www.youtube.com/results?search_query=$str" \
-	| grep '"/watch'| perl -ne 's/"/\n/g;print' \
-	| awk '{
+	    | sed -n '/"\/watch/s/"/\
+/gp' | awk '{
 		if(n>0){
 			n=0;
 			print "\x1b[32m";

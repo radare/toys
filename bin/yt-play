@@ -8,20 +8,32 @@ PLAYER=""
 PLAYERS="omxplayer mplayer"
 FIFONAME='/tmp/yt-play-fifo'
 LOCKFILE='/tmp/yt-play-lock'
+MYURL='http://192.168.2.107/cgi-bin/webplay.sh?d=https://www.youtube.com'
 
 # dbg?
 #set -x
 
 PRINTAWK_normal='
-function printtitle(name)
+function printtitle(name,count)
 {
 	print "\x1b[32m";
 	print name;
 	print "\x1b[0m";
 }
-function printurl(url)
+function printurl(base,url)
 {
-	printf "\thttps://www.youtube.com%s\n", url
+	printf "\t%s%s\n", base, url
+}'
+PRINTAWK_html='
+function printtitle(name,count)
+{
+	count > 1 && plural="s"
+	printf "<h3>%s (%d URL%s)</h3>\n", name, count, plural
+}
+
+function printurl(base,url)
+{
+	printf "<li><a href=\"%s%s\">%s%s</a></li>\n", base, url, base, url
 }
 '
 SEARCHAWK='
@@ -43,12 +55,12 @@ SEARCHAWK='
 END {
 	# O(n^2), but with ~20 entries we do not care)
 	for (i = 1; i <= curtitle; i++) {
-		printtitle(titles[i])
+		printtitle(titles[i], urlcount[i])
 		for (data in urls) {
 			split(data, ar, "\034");
 			if (ar[1] != i)
 				continue
-			printurl(urls[ar[1],ar[2]])
+			printurl(myurl, urls[ar[1],ar[2]])
 		}
 	}
 }
@@ -56,11 +68,19 @@ END {
 
 dosearch ()
 {
+	local printme printawk
+	if [ $1 = '-s' ]; then
+		printme=normal
+	else
+		printme=html
+	fi
+	eval printawk=\${PRINTAWK_${printme}}
 	shift
+
 	str="`echo $@ | sed -e 's, ,+,g'`"
 	curl -s "https://www.youtube.com/results?search_query=$str" \
 	    | sed -n '/"\/watch/s/"/\
-/gp' | awk -v htmlprint=1 "${PRINTAWK_html}${SEARCHAWK}"
+/gp' | awk -v myurl="${MYURL}" "${printawk} ${SEARCHAWK}"
 }
 
 die ()
@@ -73,7 +93,7 @@ die ()
 }
 
 case "$1" in
-'-s')
+'-s'|'-S')
 	dosearch "$@"
 	exit 0
 	;;

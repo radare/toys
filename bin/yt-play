@@ -50,16 +50,6 @@ SEARCHAWK='
 	titles[++curtitle] = $0
 	next
 }
-/\/watch/ {
-	if (n) {
-		urlcount[curtitle]++
-		urls[curtitle,urlcount[curtitle]] = $1
-		cururl = $1
-		n = 0;
-	} else {
-		n++;
-	}
-}
 /Thumbnail/ {
 	for (i = 1; i <= NF; i++) {
 		if (!match($i, "src="))
@@ -67,8 +57,18 @@ SEARCHAWK='
 
 		sub("src=\"", "", $i)
 		sub("\"", "", $i)
-		thumbs[cururl] = $i
+		curthumb = $i
 		break
+	}
+}
+/\/watch/ {
+	if (n) {
+		urlcount[curtitle]++
+		urls[curtitle,urlcount[curtitle]] = $1
+		thumbs[$1] = curthumb
+		n = 0;
+	} else {
+		n++;
 	}
 }
 END {

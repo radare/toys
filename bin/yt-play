@@ -9,35 +9,59 @@ PLAYERS="omxplayer mplayer"
 FIFONAME='/tmp/yt-play-fifo'
 LOCKFILE='/tmp/yt-play-lock'
 
-case "$1" in
-'-s')
+# dbg?
+#set -x
+
+PRINTAWK_normal='
+function printtitle(name)
+{
+	print "\x1b[32m";
+	print name;
+	print "\x1b[0m";
+}
+function printurl(url)
+{
+	printf "\thttps://www.youtube.com%s\n", url
+}
+'
+SEARCHAWK='
+/ title=/ {
+	getline
+	# need a non-associate array here to preserve order
+	titles[++curtitle] = $0
+	next
+}
+/\/watch/ {
+	if (n) {
+		urlcount[curtitle]++
+		urls[curtitle,urlcount[curtitle]] = $1
+		n = 0;
+	} else {
+		n++;
+	}
+}
+END {
+	# O(n^2), but with ~20 entries we do not care)
+	for (i = 1; i <= curtitle; i++) {
+		printtitle(titles[i])
+		for (data in urls) {
+			split(data, ar, "\034");
+			if (ar[1] != i)
+				continue
+			printurl(urls[ar[1],ar[2]])
+		}
+	}
+}
+'
+
+dosearch ()
+{
 	shift
 	str="`echo $@ | sed -e 's, ,+,g'`"
 	curl -s "https://www.youtube.com/results?search_query=$str" \
 	    | sed -n '/"\/watch/s/"/\
-/gp' | awk '{
-		if(n>0){
-			n=0;
-			print "\x1b[32m";
-			print;
-			print "\x1b[0m";
-		}
-		if(/ title=/){ n=1 }
-		if (/\/watch/){
-			if (m) {print "    http://www.youtube.com"$1;}
-			if(m>0){m=0;}else{m=1}
-		}
-	}'
-	exit 0
-	;;
--h)
-	echo "Usage: yt-play [-s search] [url]"
-	exit 0
-	;;
-esac
-
-# dbg?
-#set -x
+/gp' | awk -v htmlprint=1 "${PRINTAWK_html}${SEARCHAWK}"
+}
 
 die ()
 {
@@ -47,6 +71,17 @@ die ()
 	echo $*
 	exit ${eval}
 }
+
+case "$1" in
+'-s')
+	dosearch "$@"
+	exit 0
+	;;
+-h)
+	echo "Usage: yt-play [-s search] [url]"
+	exit 0
+	;;
+esac
 
 for a in ${PLAYERS} ; do
 	type $a >/dev/null 2>&1

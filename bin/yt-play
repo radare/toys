@@ -20,7 +20,7 @@ function printtitle(name,count)
 	print name;
 	print "\x1b[0m";
 }
-function printurl(base,url)
+function printurl(base,url,thumb)
 {
 	printf "\t%s%s\n", base, url
 }'
@@ -31,9 +31,16 @@ function printtitle(name,count)
 	printf "<h3>%s (%d URL%s)</h3>\n", name, count, plural
 }
 
-function printurl(base,url)
+function printurl(base,url,thumb)
 {
-	printf "<li><a href=\"%s%s\">%s%s</a></li>\n", base, url, base, url
+
+	printf "<a href=\"%s%s\">\n", base, url
+	if (length(thumb) > 0) {
+		if (!match(thumb, "^http"))
+			thumb = "https:" thumb
+		printf "<img src=\"%s\"/><br>\n", thumb
+	}
+	printf "%s%s</a><br>\n", base, url
 }
 '
 SEARCHAWK='
@@ -47,9 +54,21 @@ SEARCHAWK='
 	if (n) {
 		urlcount[curtitle]++
 		urls[curtitle,urlcount[curtitle]] = $1
+		cururl = $1
 		n = 0;
 	} else {
 		n++;
+	}
+}
+/Thumbnail/ {
+	for (i = 1; i <= NF; i++) {
+		if (!match($i, "src="))
+			continue
+
+		sub("src=\"", "", $i)
+		sub("\"", "", $i)
+		thumbs[cururl] = $i
+		break
 	}
 }
 END {
@@ -60,7 +79,8 @@ END {
 			split(data, ar, "\034");
 			if (ar[1] != i)
 				continue
-			printurl(myurl, urls[ar[1],ar[2]])
+			url=urls[ar[1],ar[2]]
+			printurl(myurl, url, thumbs[url])
 		}
 	}
 }
@@ -79,7 +99,7 @@ dosearch ()
 
 	str="`echo $@ | sed -e 's, ,+,g'`"
 	curl -s "https://www.youtube.com/results?search_query=$str" \
-	    | sed -n '/"\/watch/s/"/\
+	    | sed -n '/Thumbnail/p;/"\/watch/s/"/\
 /gp' | awk -v myurl="${MYURL}" "${printawk} ${SEARCHAWK}"
 }
 

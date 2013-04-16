@@ -8,37 +8,100 @@ PLAYER=""
 PLAYERS="omxplayer mplayer"
 FIFONAME='/tmp/yt-play-fifo'
 LOCKFILE='/tmp/yt-play-lock'
-
-case "$1" in
-'-s')
-	shift
-	str="`echo $@ | sed -e 's, ,+,g'`"
-	# TODO: remove perl dependency
-	curl -s "https://www.youtube.com/results?search_query=$str" \
-	| grep '"/watch'| perl -ne 's/"/\n/g;print' \
-	| awk '{
-		if(n>0){
-			n=0;
-			print "\x1b[32m";
-			print;
-			print "\x1b[0m";
-		}
-		if(/ title=/){ n=1 }
-		if (/\/watch/){
-			if (m) {print "    http://www.youtube.com"$1;}
-			if(m>0){m=0;}else{m=1}
-		}
-	}'
-	exit 0
-	;;
--h)
-	echo "Usage: yt-play [-s search] [url]"
-	exit 0
-	;;
-esac
+MYURL='http://192.168.2.107/cgi-bin/webplay.sh?d=https://www.youtube.com'
 
 # dbg?
 #set -x
+
+PRINTAWK_normal='
+function printtitle(name,count)
+{
+	print "\x1b[32m";
+	print name;
+	print "\x1b[0m";
+}
+function printurl(base,url,thumb)
+{
+	printf "\t%s%s\n", base, url
+}'
+PRINTAWK_html='
+function printtitle(name,count)
+{
+	count > 1 && plural="s"
+	printf "<h3>%s (%d URL%s)</h3>\n", name, count, plural
+}
+
+function printurl(base,url,thumb)
+{
+
+	printf "<a href=\"%s%s\">\n", base, url
+	if (length(thumb) > 0) {
+		if (!match(thumb, "^http"))
+			thumb = "https:" thumb
+		printf "<img src=\"%s\"/><br>\n", thumb
+	}
+	printf "%s%s</a><br>\n", base, url
+}
+'
+SEARCHAWK='
+/ title=/ {
+	getline
+	# need a non-associate array here to preserve order
+	titles[++curtitle] = $0
+	next
+}
+/Thumbnail/ {
+	for (i = 1; i <= NF; i++) {
+		if (!match($i, "src="))
+			continue
+
+		sub("src=\"", "", $i)
+		sub("\"", "", $i)
+		curthumb = $i
+		break
+	}
+}
+/\/watch/ {
+	if (n) {
+		urlcount[curtitle]++
+		urls[curtitle,urlcount[curtitle]] = $1
+		thumbs[$1] = curthumb
+		n = 0;
+	} else {
+		n++;
+	}
+}
+END {
+	# O(n^2), but with ~20 entries we do not care)
+	for (i = 1; i <= curtitle; i++) {
+		printtitle(titles[i], urlcount[i])
+		for (data in urls) {
+			split(data, ar, "\034");
+			if (ar[1] != i)
+				continue
+			url=urls[ar[1],ar[2]]
+			printurl(myurl, url, thumbs[url])
+		}
+	}
+}
+'
+
+dosearch ()
+{
+	local printme printawk
+	if [ $1 = '-s' ]; then
+		printme=normal
+	else
+		printme=html
+	fi
+	eval printawk=\${PRINTAWK_${printme}}
+	shift
+
+	str="`echo $@ | sed -e 's, ,+,g'`"
+	curl -s "https://www.youtube.com/results?search_query=$str" \
+	    | sed -n '/Thumbnail/p;/"\/watch/s/"/\
+/gp' | awk -v myurl="${MYURL}" "${printawk} ${SEARCHAWK}"
+}
 
 die ()
 {
@@ -48,6 +111,17 @@ die ()
 	echo $*
 	exit ${eval}
 }
+
+case "$1" in
+'-s'|'-S')
+	dosearch "$@"
+	exit 0
+	;;
+-h)
+	echo "Usage: yt-play [-s search] [url]"
+	exit 0
+	;;
+esac
 
 for a in ${PLAYERS} ; do
 	type $a >/dev/null 2>&1

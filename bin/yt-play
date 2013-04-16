@@ -34,13 +34,18 @@ function printtitle(name,count)
 function printurl(base,url,thumb)
 {
 
-	printf "<a href=\"%s%s\">\n", base, url
+	printf "<table><tr><td>"
 	if (length(thumb) > 0) {
 		if (!match(thumb, "^http"))
 			thumb = "https:" thumb
-		printf "<img src=\"%s\"/><br>\n", thumb
+		printf "<a href=\"%s%s\">\n", base, url
+		printf "<img src=\"%s\"/>\n", thumb
+		printf "</a></td><td>&nbsp;</td></tr><tr><td>"
 	}
-	printf "%s%s</a><br>\n", base, url
+	printf "<a href=\"%s%s\">\n", base, url
+	printf "Play on Raspberry Pi</a></td>\n", base, url
+	printf "<td><a href=\"https://www.youtube.com%s\">", url
+	printf "Play on youtube (in this browser)</a></td></tr></table>\n"
 }
 '
 SEARCHAWK='

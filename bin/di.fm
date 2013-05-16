@@ -1,4 +1,5 @@
 #!/bin/sh
+# author: pancake <pancake@nopcode.org>
 TYPE=$1
 P="/Applications/VLC.app/Contents/MacOS/VLC omxplayer mplayer"
 for a in $P ; do
@@ -18,13 +19,15 @@ if [ ! $? = 0 ]; then
 	exit 1
 fi
 if [ -z "${TYPE}" ]; then
-	curl -s www.di.fm | grep pls | cut -d '"' -f 2 | \
-		cut -d / -f 5 | sed -e s,.pls,, | sort -u
+	curl -A Firefox -s "http://www.di.fm/#" | grep -e 'href="/.*">$' | \
+		grep -v 'id=' | grep -v class|awk -F '"' '{ print $2}'|sed -e 's,^/,,'
+	#curl -s www.di.fm | grep pls | cut -d '"' -f 2 | \ cut -d / -f 5 | sed -e s,.pls,, | sort -u
 else
 	BASE_URL=$(curl -s www.di.fm | grep 96.blue | \
 		head -n 1|cut -d '"' -f 2|cut -d / -f -4)
 	#URL=http://listen.di.fm/public3/${TYPE}.pls
 	URL=${BASE_URL}/${TYPE}.pls
-	STREAM=$(curl -s ${URL} | grep File1 |cut -d = -f 2)
+	STREAM="http://pub2.di.fm/di_${TYPE}_aac.flv"
+	#$(curl -s ${URL} | grep File1 |cut -d = -f 2)
 	${PLAYER} ${STREAM}
 fi

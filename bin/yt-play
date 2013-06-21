@@ -103,9 +103,25 @@ dosearch ()
 	shift
 
 	str="`echo $@ | sed -e 's, ,+,g'`"
-	curl -s "https://www.youtube.com/results?search_query=$str" \
-	    | sed -n '/Thumbnail/p;/"\/watch/s/"/\
-/gp' | awk -v myurl="${MYURL}" "${printawk} ${SEARCHAWK}"
+#	curl -s "https://www.youtube.com/results?search_query=$str" \
+#	    | sed -n '/Thumbnail/p;/"\/watch/s/"/\
+# /gp' | awk -v myurl="${MYURL}" "${printawk} ${SEARCHAWK}"
+
+	curl -A "$UA" -s "http://www.youtube.com/results?search_query=$str" \
+	| grep '"/watch'| perl -ne 's/"/\n/g;print'  | grep -v more_url= \
+	| awk '{
+		if(n>0){
+			n=0;
+			print "\x1b[32m";
+			print;
+			print "\x1b[0m";
+		}
+		if(/ title=/){ n=1 }
+		if (/\/watch/){
+			if (m) {print "http://www.youtube.com"$1;}
+			if(m>0){m=0;}else{m=1}
+		}
+	}'
 }
 
 die ()

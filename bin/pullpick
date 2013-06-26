@@ -1,0 +1,35 @@
+#!/bin/sh
+# 2013 - author pancake<nopcode.org>
+URI="$1"
+BRANCH="$2"
+B=tmpbranch
+
+git branch -d $B
+die() {
+	[ -n "$1" ] && echo "die: $1"
+	git checkout ${CURBRANCH}
+	git branch -D $B
+	exit 1
+}
+trap die 2
+
+if [ -z "$URI" -o -z "$BRANCH" ]; then
+	echo "Usage: sys/pullpick.sh git://host/repo branch"
+	exit 1
+fi
+# TODO: find root
+
+echo "Pullpicking $URI $BRANCH..."
+CURBRANCH="`git branch |grep '^\*'|head -n 100 | cut -d ' ' -f2`"
+TOP=`git describe --tags|cut -d '-' -f2`
+git checkout -b $B || die "checkout"
+EDITOR=cat git pull -a $URI $BRANCH || die "pull"
+git commit -m merge
+COMMITS=`git show-branch -a | grep '\['${B}|grep '\^'|tr '[]' '[[' | cut -d '[' -f 2`
+echo "COMMITS $COMMITS"
+git checkout ${CURBRANCH} || die "checkout"
+for a in ${COMMITS} ; do
+	echo "walk $a"
+	git cherry-pick $a
+done
+git branch -D $B

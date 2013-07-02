@@ -21,7 +21,8 @@ if [ ! $? = 0 ]; then
 fi
 if [ -z "${TYPE}" ]; then
 	curl -A Firefox -s "http://www.di.fm/#" | grep -e 'href="/.*">$' | \
-		grep -v 'id=' | grep -v class|awk -F '"' '{ print $2}'|sed -e 's,^/,,'
+		grep -v 'id=' | grep -v class| grep -v premium | \
+		awk -F '"' '{ print $2}' | sed -e 's,^/,,'
 	#curl -s www.di.fm | grep pls | cut -d '"' -f 2 | \ cut -d / -f 5 | sed -e s,.pls,, | sort -u
 else
 	BASE_URL=$(curl -s www.di.fm | grep 96.blue | \

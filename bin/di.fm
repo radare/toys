@@ -2,6 +2,7 @@
 # author: pancake <pancake@nopcode.org>
 TYPE=$1
 P="/Applications/VLC.app/Contents/MacOS/VLC omxplayer mplayer"
+DIFM_KEY=$(cat ~/.difm.key 2>/dev/null)
 for a in $P ; do
 	type $a 2>&1 >/dev/null
 	if [ $? = 0 ]; then
@@ -27,7 +28,12 @@ else
 		head -n 1|cut -d '"' -f 2|cut -d / -f -4)
 	#URL=http://listen.di.fm/public3/${TYPE}.pls
 	URL=${BASE_URL}/${TYPE}.pls
-	STREAM="http://pub2.di.fm/di_${TYPE}_aac.flv"
+	if [ -n "${DIFM_KEY}" ]; then
+		STREAM="http://prem2.di.fm:80/${TYPE}?${DIFM_KEY}"
+	else
+		STREAM="http://pub2.di.fm/di_${TYPE}_aac.flv"
+	fi
+
 	#$(curl -s ${URL} | grep File1 |cut -d = -f 2)
 	${PLAYER} ${STREAM}
 fi

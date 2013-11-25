@@ -162,7 +162,10 @@ playone ()
 	case "$1" in
 	*youtube.com*)
 		dlapp=youtube-dl
-		dlappargs='--no-part'
+		# use max-quality here since omxplayer doesn't seem to be
+		# able to deal with audio in high-numbered formats
+		# (22 = 720p mp4)
+		dlappargs='--no-part --max-quality 22'
 		;;
 	*areena.yle.fi*)
 		dlapp=yle-dl
@@ -170,8 +173,17 @@ playone ()
 		# XXX!
 		RTMPKILL='pkill -9 rtmpdump'
 		;;
+
+	# if it works, it works.  if it doesn't, there will hopefully
+	# be some human-readable error.
+	#
+	# technically, we could check with 'youtube-dl --list-extractors',
+	# but running that takes ~5s on a RPi thanks to having to invoke
+	# python, so let's not.
 	*)
-		die 2 "Unsupported source \"$1\""
+		dlapp=youtube-dl
+		dlappargs='--no-part'
+		;;
 	esac
 	type ${dlapp} >/dev/null 2>&1 || die 3 "Cannot find ${dlapp}"
 

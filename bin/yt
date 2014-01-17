@@ -1,2 +1,0 @@
-#!/bin/sh
-yt-play `yt-play -s $@ | grep http`

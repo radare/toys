@@ -147,7 +147,11 @@ esac
 for a in ${PLAYERS} ; do
 	type $a >/dev/null 2>&1
 	if [ $? = 0 ]; then
-		PLAYER=$a
+		if [ "$a" = omxplayer ]; then
+			PLAYER="$a -o both"
+		else
+			PLAYER=$a
+		fi
 		break
 	fi
 done

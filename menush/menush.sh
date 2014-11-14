@@ -75,7 +75,7 @@ while : ; do
 	case "${A}" in
 	"q")
 		if [ ! "${level}" = "0" ]; then
-			let level=level-1
+			level=$(($level-1))
 			cd ..
 		fi
 		;;
@@ -88,7 +88,7 @@ while : ; do
 			if [ -f "${A}/exec" ]; then
 				sh ${A}/exec
 			else
-				let level=level+1
+				level=$(($level+1))
 				cd ${A}
 			fi
 		fi
@@ -121,7 +121,7 @@ while : ; do
 	case "${A}" in
 	"q")
 		if [ ! "${level}" = "0" ]; then
-			let level=level-1
+			level=$(($level-1))
 			cd ..
 		fi
 		;;
@@ -134,7 +134,7 @@ while : ; do
 			if [ -f "${A}/exec" ]; then
 				sh ${A}/exec
 			else
-				let level=level+1
+				level=$(($level+1))
 				cd ${A}
 			fi
 		fi

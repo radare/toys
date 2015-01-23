@@ -20,6 +20,7 @@ case "$1" in
 	echo " -l [key]   show key (same as -E)"
 	echo " -L         list keys in verbose"
 	echo " -s         list secret keys (to decrypt)"
+	echo " -f [user]  show fingerprints for matching keys"
 	echo " -s [key]   show private key" # Same as -E?
 	echo " -e [user]  encrypt for user"
 	echo " -se [user] sign and encrypt for user"
@@ -31,6 +32,9 @@ case "$1" in
 	echo " -S [key]   export secret keys"
 	echo " -I [file]  import key"
 	echo " -o, -O     filter for oneliner to multiline"
+	;;
+-f)
+	$gpg --fingerprint --list-keys $2
 	;;
 -z)
 	$gpg -a -s

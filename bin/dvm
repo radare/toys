@@ -1,0 +1,26 @@
+#!/bin/sh
+
+# desktop
+if [ -d /bin ]; then
+# base directory, at top of source tree; replace with absolute path
+base=`pwd`
+# configure root dir of interesting stuff
+root=$base/out/debug/host/linux-x86/product/sim/system
+export ANDROID_ROOT=$root
+# configure bootclasspath
+bootpath=$root/framework
+export BOOTCLASSPATH=$bootpath/core.jar:$bootpath/ext.jar:$bootpath/framework.jar:$bootpath/android.policy.jar:$bootpath/services.jar
+
+# this is where we create the dalvik-cache directory; make sure it exists
+export ANDROID_DATA=/tmp/dalvik_$USER
+mkdir -p $ANDROID_DATA/dalvik-cache
+else
+
+# in device
+base=/
+root=/system
+bootpath=$root/framework
+export BOOTCLASSPATH=$bootpath/core.jar:$bootpath/ext.jar:$bootpath/framework.jar:$bootpath/android.policy.jar:$bootpath/services.jar
+
+exec dalvikvm $@
+fi

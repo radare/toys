@@ -1,0 +1,13 @@
+#!/bin/sh
+if [ -z "$1" ]; then
+	echo "Usage: alwaysOnTop ([-d]) [appname|pid]"
+	exit 1
+fi
+
+if [ "$1" = "-d" ]; then
+	# frida -l disable.js "$2"
+	frida -q -e 'ObjC.schedule(ObjC.mainQueue, ()=> {ObjC.classes.NSApplication.sharedApplication().windows().objectAtIndex_(0).setLevel_(0);})' "$2"
+else
+	# frida -l enable.js "$1"
+	frida -q -e 'ObjC.schedule(ObjC.mainQueue, ()=> {ObjC.classes.NSApplication.sharedApplication().windows().objectAtIndex_(0).setLevel_(1000);})' "$1"
+fi

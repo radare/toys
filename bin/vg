@@ -1,0 +1,26 @@
+#!/bin/sh
+VG=vagrant
+
+case "$1" in
+ls)
+	$VG global-status | grep virtualbox | awk '{print $1" "$5}'
+	;;
+ssh)
+	if [ -z "$2" ]; then
+		$VG ssh $2
+	else
+		A=`$0 ls | head -n1 |cut -d ' ' -f 1`
+		$VG ssh $A
+	fi
+	;;
+up)
+	$VG up
+	;;
+down|halt)
+	if [ -z "$2" ]; then
+		$VG halt $2
+	else
+		echo "Usage: vg down [id]"
+	fi
+	;;
+esac

@@ -9,8 +9,13 @@ ssh)
 	if [ -z "$2" ]; then
 		$VG ssh $2
 	else
-		A=`$0 ls | head -n1 |cut -d ' ' -f 1`
-		$VG ssh $A
+		A=$($0 ls | grep `pwd` |cut -d ' ' -f 1)
+		if [ -z "$A" ]; then
+			A=`$0 ls | head -n1 |cut -d ' ' -f 1`
+		fi
+		if [ -z "$A" ]; then
+			$VG ssh $A
+		fi
 	fi
 	;;
 up)
@@ -18,9 +23,21 @@ up)
 	;;
 down|halt)
 	if [ -z "$2" ]; then
-		$VG halt $2
+		A=$($0 ls | grep `pwd` |cut -d ' ' -f 1)
+		if [ -n "$A" ]; then
+			$VG halt $A
+		else
+			echo "Usage: vg down [id]"
+		fi
 	else
-		echo "Usage: vg down [id]"
+		$VG halt $2
 	fi
+	;;
+
+'')
+	$0 ls | grep `pwd`
+	;;
+-h|*)
+	echo "Usage: vg [ls|ssh|up|down]"
 	;;
 esac

@@ -10,7 +10,7 @@ rm)
 		if [ -z "$V" ]; then
 			echo "Usage: vg rm"
 		else
-			$VG detroy $V
+			$VG destroy $V
 		fi
 	fi
 	;;

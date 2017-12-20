@@ -2,11 +2,23 @@
 VG=vagrant
 
 case "$1" in
+rm)
+	if [ -n "$2" ]; then
+		$VG destroy $2
+	else
+		V=$($0 ls | grep `pwd` | awk '{print $1}')
+		if [ -z "$V" ]; then
+			echo "Usage: vg rm"
+		else
+			$VG detroy $V
+		fi
+	fi
+	;;
 ls)
 	$VG global-status | grep virtualbox | awk '{print $1" "$5}'
 	;;
 ssh)
-	if [ -z "$2" ]; then
+	if [ -n "$2" ]; then
 		$VG ssh $2
 	else
 		A=$($0 ls | grep `pwd` |cut -d ' ' -f 1)
@@ -38,6 +50,6 @@ down|halt)
 	$0 ls | grep `pwd`
 	;;
 -h|*)
-	echo "Usage: vg [ls|ssh|up|down]"
+	echo "Usage: vg [ls|rm|ssh|up|down]"
 	;;
 esac

@@ -25,7 +25,7 @@ ssh)
 		if [ -z "$A" ]; then
 			A=`$0 ls | head -n1 |cut -d ' ' -f 1`
 		fi
-		if [ -z "$A" ]; then
+		if [ -n "$A" ]; then
 			$VG ssh $A
 		fi
 	fi

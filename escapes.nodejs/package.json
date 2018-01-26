@@ -8,8 +8,8 @@
     "email": "pancake@nopcode.org"
   },
   "dependencies": {
-    "jquery": "1.7",
-    "canvas": "0.12"
+    "jquery": "3.3.1",
+    "canvas": "1.6.9"
   },
   "keywords": [
     "art",
